@@ -1,11 +1,11 @@
 <template>
-  <v-card dark>
+  <!-- <v-card dark>
     <v-card-title>
       <v-toolbar color="blue lighten-2" dark>
         <v-toolbar-title>Datos personales</v-toolbar-title>
       </v-toolbar>
     </v-card-title>
-    <v-card-text class="px-5">
+    <v-card-text class="px-5"> -->
       <v-form>
         <v-container>
           <v-layout row wrap>
@@ -120,12 +120,12 @@
           </v-layout>
         </v-container>
       </v-form>
-    </v-card-text>
+    <!-- </v-card-text>
     <v-card-actions>
       <v-btn color="green lighten-1" @click="submit">Aceptar</v-btn>
       <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
     </v-card-actions>
-  </v-card>
+  </v-card> -->
 </template>
 
 <script>

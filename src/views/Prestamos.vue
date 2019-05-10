@@ -3,9 +3,32 @@
     <v-layout row wrap>
       <v-flex xs12>
         <div class="text-xs-center">
-          <v-btn @click="add" fab dark small color="teal">
-            <v-icon dark>add</v-icon>
-          </v-btn>
+          <v-dialog v-model="nuevo" fullscreen hide-overlay transition="dialog-bottom-transition">
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on" fab dark small color="teal">
+                <v-icon dark>add</v-icon>
+              </v-btn>
+              <!-- <v-btn color="primary" dark v-on="on">Open Dialog</v-btn> -->
+            </template>
+            <v-card>
+              <v-toolbar dark color="primary">
+                <v-btn icon dark @click="nuevo = false">
+                  <v-icon>close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Nuevo prestamo</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-toolbar-items>
+                  <v-btn dark flat @click="nuevo = false">Guardar</v-btn>
+                </v-toolbar-items>
+              </v-toolbar>
+              <v-flex xs12 d-flex>
+                <v-sheet class="d-flex" color="grey">
+                  
+                  <nuevo-cliente></nuevo-cliente>
+                </v-sheet>
+              </v-flex>
+            </v-card>
+          </v-dialog>
           <v-btn @click="renew" fab dark small color="teal">
             <v-icon dark>refresh</v-icon>
           </v-btn>
@@ -14,8 +37,6 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12>
-        <nuevo-cliente v-if="nuevo"></nuevo-cliente>
-        <v-divider class="divisor"></v-divider>
         <prestamos-table></prestamos-table>
       </v-flex>
     </v-layout>
@@ -32,7 +53,10 @@ export default {
   data() {
     return {
       nuevo: false,
-      refresh: false
+      refresh: false,
+      notifications: false,
+      sound: true,
+      widgets: false
     };
   },
   methods: {
