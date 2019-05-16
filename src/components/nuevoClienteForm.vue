@@ -80,11 +80,18 @@
                 @blur="$v.name.$touch()"
               ></v-text-field>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs4>
               <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
                 <div>Sexo:</div>
                 <v-radio label="Hombre" value="H"></v-radio>
                 <v-radio label="Mujer" value="M"></v-radio>
+              </v-radio-group>
+            </v-flex>
+            <v-flex xs4>
+              <v-radio-group row>
+                <div>Estado civil:</div>
+                <v-radio label="Casado" value="1"></v-radio>
+                <v-radio label="Soltero" value="0"></v-radio>
               </v-radio-group>
             </v-flex>
             <v-flex xs12>
@@ -99,11 +106,11 @@
                 @change="$v.select.$touch()"
                 @blur="$v.select.$touch()"
               ></v-select>
-            </v-flex>
+            </v-flex>            
             <v-flex xs12>
               <v-text-field
                 v-model="direccion"
-                :error-messages="addressErrors"
+                :error-messages="addressErrors"                
                 label="Direccion particular"
                 required
                 @input="$v.direccion.$touch()"
@@ -111,11 +118,15 @@
               ></v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-radio-group row>
-                <div>Estado civil:</div>
-                <v-radio label="Casado" value="1"></v-radio>
-                <v-radio label="Soltero" value="0"></v-radio>
-              </v-radio-group>
+              <v-text-field   
+                v-model="telefono"
+                :error-messages="phoneErrors"
+                :counter="10"
+                label="Telefono celular"
+                required
+                @input="$v.telefono.$touch()"
+                @blur="$v.telefono.$touch()"
+              ></v-text-field>
             </v-flex>
           </v-layout>
         </v-container>

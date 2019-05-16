@@ -1,11 +1,11 @@
 <template>
-  <v-card dark>
+  <!-- <v-card dark>
     <v-card-title>
       <v-toolbar color="blue lighten-2" dark>
         <v-toolbar-title>Datos personales</v-toolbar-title>
       </v-toolbar>
     </v-card-title>
-    <v-card-text class="px-5">
+    <v-card-text class="px-5"> -->
       <v-form>
         <v-container>
           <v-layout row wrap>
@@ -33,31 +33,34 @@
                 min-width="100px"
               >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-model="date" label="Fecha de nacimiento" readonly v-on="on"></v-text-field>
+                  <v-text-field
+                    v-model="date"
+                    label="Fecha de nacimiento"
+                    :error-messages="dateErrors"
+                    readonly
+                    v-on="on"
+                    @input="$v.date.$touch()"
+                    @blur="$v.date.$touch()"
+                  ></v-text-field>
                 </template>
-                <v-date-picker
-                  ref="picker"
-                  v-model="date"
-                  :max="new Date().toISOString().substr(0, 10)"
-                  min="1950-01-01"
-                  @change="saveDate"
-                ></v-date-picker>
+                <v-date-picker v-model="date" ref="picker" :max="maxDate" min="1950-01-01" @change="saveDate"></v-date-picker>
               </v-menu>
             </v-flex>
             <v-flex xs12 md4>
               <v-text-field
-                v-model="name"
+                :v-model="name"
                 :error-messages="nameErrors"
                 :counter="30"
                 label="Nombre"
                 required
+                @keyup="name.toUpperCase()"
                 @input="$v.name.$touch()"
                 @blur="$v.name.$touch()"
               ></v-text-field>
             </v-flex>
             <v-flex xs12 md4>
               <v-text-field
-                v-model="name"
+                v-model="apaterno"
                 :error-messages="nameErrors"
                 :counter="15"
                 label="Apellido paterno"
@@ -68,7 +71,7 @@
             </v-flex>
             <v-flex xs12 md4>
               <v-text-field
-                v-model="name"
+                v-model="amaterno"
                 :error-messages="nameErrors"
                 :counter="15"
                 label="Apellido materno"
@@ -77,11 +80,18 @@
                 @blur="$v.name.$touch()"
               ></v-text-field>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs4>
               <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
                 <div>Sexo:</div>
                 <v-radio label="Hombre" value="H"></v-radio>
                 <v-radio label="Mujer" value="M"></v-radio>
+              </v-radio-group>
+            </v-flex>
+            <v-flex xs4>
+              <v-radio-group row>
+                <div>Estado civil:</div>
+                <v-radio label="Casado" value="1"></v-radio>
+                <v-radio label="Soltero" value="0"></v-radio>
               </v-radio-group>
             </v-flex>
             <v-flex xs12>
@@ -96,33 +106,37 @@
                 @change="$v.select.$touch()"
                 @blur="$v.select.$touch()"
               ></v-select>
-            </v-flex>
+            </v-flex>            
             <v-flex xs12>
               <v-text-field
-                v-model="email"
-                :error-messages="emailErrors"
-                label="E-mail"
+                v-model="direccion"
+                :error-messages="addressErrors"                
+                label="Direccion particular"
                 required
-                @input="$v.email.$touch()"
-                @blur="$v.email.$touch()"
+                @input="$v.direccion.$touch()"
+                @blur="$v.direccion.$touch()"
               ></v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-radio-group row>
-                <div>Estado civil:</div>
-                <v-radio label="Casado" value="1"></v-radio>
-                <v-radio label="Soltero" value="0"></v-radio>
-              </v-radio-group>
+              <v-text-field   
+                v-model="telefono"
+                :error-messages="phoneErrors"
+                :counter="10"
+                label="Telefono celular"
+                required
+                @input="$v.telefono.$touch()"
+                @blur="$v.telefono.$touch()"
+              ></v-text-field>
             </v-flex>
           </v-layout>
         </v-container>
       </v-form>
-    </v-card-text>
-    <!-- <v-card-actions>
+    <!-- </v-card-text>
+    <v-card-actions>
       <v-btn color="green lighten-1" @click="submit">Aceptar</v-btn>
       <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
-    </v-card-actions> -->
-  </v-card>
+    </v-card-actions>
+  </v-card> -->
 </template>
 
 <script>
@@ -133,9 +147,12 @@ export default {
   name: "NuevoCliente",
   mixins: [validationMixin],
   validations: {
+    date: { required, maxLength: maxLength(10) },
     name: { required, maxLength: maxLength(30) },
+    apaterno: { required, maxLength: maxLength(15) },
+    amaterno: { required, maxLength: maxLength(15) },
     request: { required, between: between(1, 99999), maxLength: maxLength(5) },
-    email: { required, email },
+    direccion: { required },
     select: { required },
     sexo: { required },
     edocivil: { required },
@@ -149,9 +166,18 @@ export default {
     return {
       request: "",
       date: null,
+      maxDate:
+        new Date().toISOString().substr(0, 4) -
+        18 +
+        "-" +
+        new Date().toISOString().substr(5, 2) +
+        "-" +
+        new Date().toISOString().substr(8, 2),
       menu: false,
       name: "",
-      email: "",
+      apaterno: "",
+      amaterno: "",
+      direccion: "",
       select: null,
       items: [
         { id: "MEX-AGS", value: "AS", label: "Aguascalientes (AGS)" },
@@ -187,17 +213,10 @@ export default {
         { id: "MEX-YUC", value: "YN", label: "Yucatán (YUC)" },
         { id: "MEX-ZAC", value: "ZS", label: "Zacatecas (ZAC)" }
       ],
-      checkbox: false,
       sexo: false
     };
   },
   computed: {
-    checkboxErrors() {
-      const errors = [];
-      if (!this.$v.checkbox.$dirty) return errors;
-      !this.$v.checkbox.checked && errors.push("You must agree to continue!");
-      return errors;
-    },
     selectErrors() {
       const errors = [];
       if (!this.$v.select.$dirty) return errors;
@@ -219,15 +238,30 @@ export default {
       const errors = [];
       if (!this.$v.name.$dirty) return errors;
       !this.$v.name.maxLength &&
-        errors.push("Name must be at most 10 characters long");
-      !this.$v.name.required && errors.push("Name is required.");
+        errors.push("El valor introducido es incorrecto.");
+      !this.$v.name.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     sexoErrors() {
       const errors = [];
       if (!this.$v.sexo.$dirty) return errors;
       !this.$v.sexo.checked && errors.push("Indique el sexo del solicitante.");
-      !this.$v.email.required && errors.push("El sexo es obligatorio required");
+      !this.$v.email.required && errors.push("Este campo es obligatorio");
+      return errors;
+    },
+    addressErrors() {
+      const errors = [];
+      if (!this.$v.direccion.$dirty) return errors;
+      !this.$v.direccion.maxLength && errors.push("La direccion es incorrecta");
+      !this.$v.direccion.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
+    dateErrors() {
+      const errors = [];
+      if (!this.$v.date.$dirty) return errors;
+      !this.$v.date.maxLength &&
+        errors.push("La fecha de nacimiento es incorrecta.");
+      !this.$v.date.required && errors.push("Este campo es obligatorio.");
       return errors;
     }
   },
@@ -237,6 +271,9 @@ export default {
     }
   },
   methods: {
+    upperCasedName(){
+      this.name.toUpperCase();
+    },
     submit() {
       this.$v.$touch();
     },
@@ -248,8 +285,12 @@ export default {
       this.checkbox = false;
     },
     saveDate(date) {
-      this.$refs.menu.saveDate(date);
+      console.log(this.$refs);
+      this.$refs.menu.save(date);
     }
+  },
+  computed:{
+    
   }
 };
 </script>

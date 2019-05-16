@@ -22,11 +22,11 @@
                 </v-toolbar-items>
               </v-toolbar>
               <v-flex xs12 d-flex>
-                <v-sheet class="d-flex" color="grey">
-                  
-                  <nuevo-cliente></nuevo-cliente>
-                </v-sheet>
+                <v-sheet class="d-flex" color="grey darken-4">                  
+                  <nuevo-cliente></nuevo-cliente>                  
+                </v-sheet>                
               </v-flex>
+              <v-divider class="divisor"></v-divider>
             </v-card>
           </v-dialog>
           <v-btn @click="renew" fab dark small color="teal">
