@@ -1,25 +1,34 @@
 <template>
   <v-card>
     <v-card-title>
-      Prestamos
+      <h1>Prestamos</h1>
+      <v-spacer></v-spacer>
+      <v-select @change="filtrarPrestamos($event)" :items="comisionistas" item-text="nombre" item-value="id" label="Comisionistas"></v-select>
       <v-spacer></v-spacer>
       <v-text-field v-model="search" append-icon="search" label="Buscar" single-line hide-details></v-text-field>
     </v-card-title>
-    <v-data-table :headers="headers" :items="desserts" :search="search">
-      <template v-slot:items="props">
-        <td>{{ props.item.name }}</td>
-        <td class="text-xs-right">{{ props.item.calories }}</td>
-        <td class="text-xs-right">{{ props.item.fat }}</td>
-        <td class="text-xs-right">{{ props.item.carbs }}</td>
-        <td class="text-xs-right">{{ props.item.protein }}</td>
-        <td class="text-xs-right">{{ props.item.iron }}</td>
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      :search="search"
+      :loading="loading"
+      class="elevation-1"
+    >
+      <template slot="items" slot-scope="props">
+        <td class="text-xs-center">{{ props.item.nombre }}</td>
+        <td class="text-xs-center">{{ props.item.inicio }}</td>
+        <td class="text-xs-center">{{ props.item.prestamo }}</td>
+        <td class="text-xs-center">{{ props.item.adeudo }}</td>
+        <td class="text-xs-center">{{ props.item.pago }}</td>
+        <td class="text-xs-center">{{ props.item.comisionista.nombre }}</td>
+        <td class="text-xs-center">{{ props.item.dia }}</td>
+        <td class="text-xs-center">{{ props.item.estado }}</td>
+        <td class="text-xs-center">
+          <v-text-field label="Cantidad" prefix="$"></v-text-field>
+        </td>
       </template>
       <template v-slot:no-results>
-        <v-alert
-          :value="true"
-          color="error"
-          icon="warning"
-        >El termino "{{ search }}" no genero resultados.</v-alert>
+        <v-alert :value="true" color="error" icon="warning">No se pudieron obtener resultados.</v-alert>
       </template>
     </v-data-table>
   </v-card>
@@ -30,102 +39,114 @@ export default {
   data() {
     return {
       search: "",
+      loading: false,
       headers: [
         {
-          text: "Dessert (100g serving)",
-          align: "left",
-          sortable: false,
-          value: "name"
+          text: "Cliente",
+          align: "center",
+          sortable: true,
+          value: "nombre"
         },
-        { text: "Calories", value: "calories" },
-        { text: "Fat (g)", value: "fat" },
-        { text: "Carbs (g)", value: "carbs" },
-        { text: "Protein (g)", value: "protein" },
-        { text: "Iron (%)", value: "iron" }
+        {
+          text: "Inicio",
+          align: "center",
+          sortable: true,
+          value: "inicio"
+        },
+        {
+          text: "Prestamo",
+          align: "center",
+          sortable: true,
+          value: "prestamo"
+        },
+        { text: "Adeudo", align: "center", sortable: true, value: "adeudo" },
+        {
+          text: "Pago semanal",
+          align: "center",
+          sortable: true,
+          value: "pago"
+        },
+        {
+          text: "Comisionista",
+          align: "center",
+          sortable: true,
+          value: "comisionista"
+        },
+        {
+          text: "Dia de cobro",
+          align: "center",
+          sortable: true,
+          value: "dia"
+        },
+        { text: "Estado", align: "center", sortable: true, value: "estado" },
+        { text: "Pagar", align: "center", value: "pagar" }
       ],
-      desserts: [
+      items: [
         {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: "1%"
+          nombre: "Juan Lopez Perez",
+          inicio: "04/01/2019",
+          prestamo: 10000,
+          adeudo: 6200,
+          pago: 800,
+          comisionista: {
+            id: 1,
+            nombre: "Monserrath Castillo"
+          },
+          dia: "Lunes",
+          estado: "REGULAR"
         },
         {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: "1%"
+          nombre: "Juan Lopez Perez",
+          inicio: "04/01/2019",
+          prestamo: 10000,
+          adeudo: 6200,
+          pago: 800,
+          comisionista: {
+            id: 2,
+            nombre: "Mariella Rojas"
+          },
+          dia: "Martes",
+          estado: "REGULAR"
         },
         {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: "7%"
+          nombre: "Juan Lopez Perez",
+          inicio: "04/01/2019",
+          prestamo: 10000,
+          adeudo: 6200,
+          pago: 800,
+          comisionista: {
+            id: 3,
+            nombre: "Beatriz Vega"
+          },
+          dia: "Miercoles",
+          estado: "REGULAR"
+        }
+      ],
+      filteredItems: [],
+      comisionistas: [
+        {
+          id: 1,
+          nombre: "Monserrath Castillo"
         },
         {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: "8%"
+          id: 2,
+          nombre: "Mariella Rojas"
         },
         {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: "16%"
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: "0%"
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: "2%"
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: "45%"
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: "22%"
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: "6%"
+          id: 3,
+          nombre: "Beatriz Vega"
         }
       ]
     };
+  },
+  methods: {
+    filtrarPrestamos(id) {
+      // console.log(id);
+      // return;
+      this.filteredItems = this.items.filter(function(id) {
+        return this.items.comisionista.id == id;
+      });
+    }
   }
 };
 </script>

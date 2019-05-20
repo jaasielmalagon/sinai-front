@@ -5,146 +5,167 @@
         <v-toolbar-title>Datos personales</v-toolbar-title>
       </v-toolbar>
     </v-card-title>
-    <v-card-text class="px-5"> -->
-      <v-form>
-        <v-container>
-          <v-layout row wrap>
-            <v-flex xs12 md3>
+  <v-card-text class="px-5">-->
+  <v-form>
+    <v-container>
+            <v-layout row wrap>
+        <v-flex xs12 md3>
+          <v-text-field
+            v-model="request"
+            :error-messages="requestErrors"
+            :counter="5"
+            label="Num. solicitud"
+            required
+            @input="$v.request.$touch()"
+            @blur="$v.request.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 md9>
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="100px"
+          >
+            <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="request"
-                :error-messages="requestErrors"
-                :counter="5"
-                label="Num. solicitud"
-                required
-                @input="$v.request.$touch()"
-                @blur="$v.request.$touch()"
+                v-model="date"
+                label="Fecha de nacimiento"
+                :error-messages="dateErrors"
+                readonly
+                v-on="on"
+                @input="$v.date.$touch()"
+                @blur="$v.date.$touch()"
               ></v-text-field>
-            </v-flex>
-            <v-flex xs12 md9>
-              <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                min-width="100px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="date"
-                    label="Fecha de nacimiento"
-                    :error-messages="dateErrors"
-                    readonly
-                    v-on="on"
-                    @input="$v.date.$touch()"
-                    @blur="$v.date.$touch()"
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="date" ref="picker" :max="maxDate" min="1950-01-01" @change="saveDate"></v-date-picker>
-              </v-menu>
-            </v-flex>
-            <v-flex xs12 md4>
-              <v-text-field
-                :v-model="name"
-                :error-messages="nameErrors"
-                :counter="30"
-                label="Nombre"
-                required
-                @keyup="name.toUpperCase()"
-                @input="$v.name.$touch()"
-                @blur="$v.name.$touch()"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12 md4>
-              <v-text-field
-                v-model="apaterno"
-                :error-messages="nameErrors"
-                :counter="15"
-                label="Apellido paterno"
-                required
-                @input="$v.name.$touch()"
-                @blur="$v.name.$touch()"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12 md4>
-              <v-text-field
-                v-model="amaterno"
-                :error-messages="nameErrors"
-                :counter="15"
-                label="Apellido materno"
-                required
-                @input="$v.name.$touch()"
-                @blur="$v.name.$touch()"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs4>
-              <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
-                <div>Sexo:</div>
-                <v-radio label="Hombre" value="H"></v-radio>
-                <v-radio label="Mujer" value="M"></v-radio>
-              </v-radio-group>
-            </v-flex>
-            <v-flex xs4>
-              <v-radio-group row>
-                <div>Estado civil:</div>
-                <v-radio label="Casado" value="1"></v-radio>
-                <v-radio label="Soltero" value="0"></v-radio>
-              </v-radio-group>
-            </v-flex>
-            <v-flex xs12>
-              <v-select
-                v-model="select"
-                :items="items"
-                item-text="label"
-                item-value="value"
-                :error-messages="selectErrors"
-                label="Entidad de nacimiento"
-                required
-                @change="$v.select.$touch()"
-                @blur="$v.select.$touch()"
-              ></v-select>
-            </v-flex>            
-            <v-flex xs12>
-              <v-text-field
-                v-model="direccion"
-                :error-messages="addressErrors"                
-                label="Direccion particular"
-                required
-                @input="$v.direccion.$touch()"
-                @blur="$v.direccion.$touch()"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field   
-                v-model="telefono"
-                :error-messages="phoneErrors"
-                :counter="10"
-                label="Telefono celular"
-                required
-                @input="$v.telefono.$touch()"
-                @blur="$v.telefono.$touch()"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-form>
-    <!-- </v-card-text>
+            </template>
+            <v-date-picker
+              v-model="date"
+              ref="picker"
+              :max="maxDate"
+              min="1950-01-01"
+              @change="saveDate"
+            ></v-date-picker>
+          </v-menu>
+        </v-flex>
+        <v-flex xs12 md4>
+          <v-text-field
+            :v-model="name"
+            :error-messages="nameErrors"
+            :counter="30"
+            label="Nombre"
+            required
+            @keyup="name.toUpperCase()"
+            @input="$v.name.$touch()"
+            @blur="$v.name.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 md4>
+          <v-text-field
+            v-model="apaterno"
+            :error-messages="nameErrors"
+            :counter="15"
+            label="Apellido paterno"
+            required
+            @input="$v.name.$touch()"
+            @blur="$v.name.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 md4>
+          <v-text-field
+            v-model="amaterno"
+            :error-messages="nameErrors"
+            :counter="15"
+            label="Apellido materno"
+            required
+            @input="$v.name.$touch()"
+            @blur="$v.name.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 md6>
+          <v-text-field
+            v-model="curp"
+            :error-messages="curpErrors"
+            :counter="18"
+            label="CURP"
+            required
+            @input="$v.curp.$touch()"
+            @blur="$v.curp.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 md6>
+          <v-text-field
+            v-model="ocr"
+            :error-messages="ocrErrors"
+            :counter="13"
+            label="Clave de elector"
+            required
+            @input="$v.ocr.$touch()"
+            @blur="$v.ocr.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs4>
+          <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
+            <div>Sexo:</div>
+            <v-radio label="Hombre" value="H"></v-radio>
+            <v-radio label="Mujer" value="M"></v-radio>
+          </v-radio-group>
+        </v-flex>
+        <v-flex xs4>
+          <v-select
+            v-model="select"
+            :items="items"
+            item-text="label"
+            item-value="value"
+            :error-messages="selectErrors"
+            label="Entidad de nacimiento"
+            required
+            @change="$v.select.$touch()"
+            @blur="$v.select.$touch()"
+          ></v-select>
+        </v-flex>
+        <v-flex xs12>
+          <v-text-field
+            v-model="direccion"
+            :error-messages="addressErrors"
+            label="Direccion particular"
+            required
+            @input="$v.direccion.$touch()"
+            @blur="$v.direccion.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs4>
+          <v-text-field
+            v-model="telefono"
+            :error-messages="phoneErrors"
+            :counter="10"
+            label="Telefono celular"
+            required
+            @input="$v.telefono.$touch()"
+            @blur="$v.telefono.$touch()"
+          ></v-text-field>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-form>
+  <!-- </v-card-text>
     <v-card-actions>
       <v-btn color="green lighten-1" @click="submit">Aceptar</v-btn>
       <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
     </v-card-actions>
-  </v-card> -->
+  </v-card>-->
 </template>
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, maxLength, email, between } from "vuelidate/lib/validators";
+import { required, maxLength, between } from "vuelidate/lib/validators";
 
 export default {
-  name: "NuevoCliente",
+  name: "ReferenciaForm",
   mixins: [validationMixin],
   validations: {
     date: { required, maxLength: maxLength(10) },
@@ -156,6 +177,9 @@ export default {
     select: { required },
     sexo: { required },
     edocivil: { required },
+    curp: { required, maxLength: maxLength(18) },
+    ocr: { required, maxLength: maxLength(13) },
+    telefono: { required, maxLength: maxLength(10) },
     checkbox: {
       checked(val) {
         return val;
@@ -177,7 +201,10 @@ export default {
       name: "",
       apaterno: "",
       amaterno: "",
+      curp: "",
+      ocr: "",
       direccion: "",
+      telefono: "",
       select: null,
       items: [
         { id: "MEX-AGS", value: "AS", label: "Aguascalientes (AGS)" },
@@ -263,6 +290,30 @@ export default {
         errors.push("La fecha de nacimiento es incorrecta.");
       !this.$v.date.required && errors.push("Este campo es obligatorio.");
       return errors;
+    },
+    curpErrors() {
+      const errors = [];
+      if (!this.$v.curp.$dirty) return errors;
+      !this.$v.curp.maxLength &&
+        errors.push("El valor introducido es incorrecto.");
+      !this.$v.curp.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
+    ocrErrors() {
+      const errors = [];
+      if (!this.$v.ocr.$dirty) return errors;
+      !this.$v.ocr.maxLength &&
+        errors.push("El valor introducido es incorrecto.");
+      !this.$v.ocr.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
+    phoneErrors() {
+      const errors = [];
+      if (!this.$v.telefono.$dirty) return errors;
+      !this.$v.telefono.maxLength &&
+        errors.push("El valor introducido es incorrecto.");
+      !this.$v.telefono.required && errors.push("Este campo es obligatorio.");
+      return errors;
     }
   },
   watch: {
@@ -271,7 +322,7 @@ export default {
     }
   },
   methods: {
-    upperCasedName(){
+    upperCasedName() {
       this.name.toUpperCase();
     },
     submit() {
@@ -285,12 +336,9 @@ export default {
       this.checkbox = false;
     },
     saveDate(date) {
-      console.log(this.$refs);
+      // console.log(this.$refs);
       this.$refs.menu.save(date);
     }
-  },
-  computed:{
-    
   }
 };
 </script>

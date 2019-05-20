@@ -21,12 +21,38 @@
                   <v-btn dark flat @click="nuevo = false">Guardar</v-btn>
                 </v-toolbar-items>
               </v-toolbar>
-              <v-flex xs12 d-flex>
-                <v-sheet class="d-flex" color="grey darken-4">                  
-                  <nuevo-cliente></nuevo-cliente>                  
-                </v-sheet>                
+              <v-divider class="divisor"></v-divider>
+
+              <v-flex xs10 d-flex offset-xs1>
+                <v-card>
+                  <v-toolbar color="green darken-1" dark>
+                    <v-toolbar-title>Datos personales</v-toolbar-title>
+                  </v-toolbar>
+                  <nuevo-cliente v-on:esCasado="isMarried($event)"></nuevo-cliente>
+                </v-card>
               </v-flex>
               <v-divider class="divisor"></v-divider>
+
+              <v-flex  v-if="married" xs10 d-flex offset-xs1>
+                <v-card>
+                  <v-toolbar color="green darken-1" dark>
+                    <v-toolbar-title>Datos del conyuge</v-toolbar-title>
+                  </v-toolbar>
+                  <referencia-form></referencia-form>
+                </v-card>
+              </v-flex>
+              <v-divider v-if="married" class="divisor"></v-divider>
+
+              <v-flex xs10 d-flex offset-xs1>
+                <v-card>
+                  <v-toolbar color="green darken-1" dark>
+                    <v-toolbar-title>Datos de la referencia</v-toolbar-title>
+                  </v-toolbar>
+                  <referencia-form></referencia-form>
+                </v-card>
+              </v-flex>
+              <v-divider class="divisor"></v-divider>
+
             </v-card>
           </v-dialog>
           <v-btn @click="renew" fab dark small color="teal">
@@ -45,18 +71,20 @@
 
 <script>
 import NuevoCliente from "../components/nuevoClienteForm";
+import ReferenciaForm from "../components/ReferenciaForm";
 import PrestamosTable from "../components/PrestamosTable";
 
 export default {
   name: "Prestamos",
-  components: { NuevoCliente, PrestamosTable },
+  components: { NuevoCliente, PrestamosTable, ReferenciaForm },
   data() {
     return {
       nuevo: false,
       refresh: false,
       notifications: false,
       sound: true,
-      widgets: false
+      widgets: false,
+      married: false
     };
   },
   methods: {
@@ -67,6 +95,10 @@ export default {
     renew() {
       this.nuevo = false;
       this.refresh = true;
+    },
+    isMarried(msg) {
+      console.log(msg)
+      this.married = msg;
     }
   }
 };
