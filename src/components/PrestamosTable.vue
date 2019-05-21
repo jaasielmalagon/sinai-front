@@ -3,13 +3,20 @@
     <v-card-title>
       <h1>Prestamos</h1>
       <v-spacer></v-spacer>
-      <v-select @change="filtrarPrestamos($event)" :items="comisionistas" item-text="nombre" item-value="id" label="Comisionistas"></v-select>
+      <v-select
+        @change="filtrarPrestamos($event)"
+        :items="comisionistas"
+        item-text="nombre"
+        :return-object="true"
+        label="Comisionistas"
+        no-data-text="No hay comisionistas"
+      ></v-select>
       <v-spacer></v-spacer>
       <v-text-field v-model="search" append-icon="search" label="Buscar" single-line hide-details></v-text-field>
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="filteredItems"
       :search="search"
       :loading="loading"
       class="elevation-1"
@@ -103,7 +110,7 @@ export default {
           pago: 800,
           comisionista: {
             id: 2,
-            nombre: "Mariella Rojas"
+            nombre: "Mariela Rojas"
           },
           dia: "Martes",
           estado: "REGULAR"
@@ -125,12 +132,16 @@ export default {
       filteredItems: [],
       comisionistas: [
         {
+          id: 0,
+          nombre: "Todos"
+        },
+        {
           id: 1,
           nombre: "Monserrath Castillo"
         },
         {
           id: 2,
-          nombre: "Mariella Rojas"
+          nombre: "Mariela Rojas"
         },
         {
           id: 3,
@@ -140,13 +151,20 @@ export default {
     };
   },
   methods: {
-    filtrarPrestamos(id) {
-      // console.log(id);
-      // return;
-      this.filteredItems = this.items.filter(function(id) {
-        return this.items.comisionista.id == id;
-      });
+    filtrarPrestamos(comisionista) {
+      let items = [];
+      this.filteredItems.map(
+        comisionista => {
+          console.log(this.filteredItems);          
+        }
+      ).bind(this);      
+    },
+    initialize() {
+      this.filteredItems = this.items;
     }
+  },
+  created() {
+    this.initialize();
   }
 };
 </script>
