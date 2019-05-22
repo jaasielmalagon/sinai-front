@@ -152,12 +152,13 @@ export default {
   },
   methods: {
     filtrarPrestamos(comisionista) {
-      let items = [];
-      this.filteredItems.map(
-        comisionista => {
-          console.log(this.filteredItems);          
-        }
-      ).bind(this);      
+      this.filteredItems = this.items;
+      if (comisionista.id !== 0) {
+        let items = this.filteredItems.filter(function(item) {
+          return item.comisionista.id === comisionista.id;
+        });
+        this.filteredItems = items;
+      }
     },
     initialize() {
       this.filteredItems = this.items;

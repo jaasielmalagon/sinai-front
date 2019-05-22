@@ -97,7 +97,6 @@ export default {
       this.refresh = true;
     },
     isMarried(msg) {
-      console.log(msg)
       this.married = msg;
     }
   }
