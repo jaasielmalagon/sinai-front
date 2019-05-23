@@ -116,7 +116,12 @@
           </v-radio-group>
         </v-flex>
         <v-flex xs4>
-          <v-switch @change="$emit('esCasado', switch1)" v-model="switch1" color="success" label="El solicitante es casado."></v-switch>
+          <v-switch
+            @change="$emit('esCasado', switch1)"
+            v-model="switch1"
+            color="success"
+            label="El solicitante es casado."
+          ></v-switch>
         </v-flex>
         <v-flex xs4>
           <v-select
@@ -252,7 +257,17 @@ export default {
       val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
     }
   },
+  mounted: function() {
+    this.writeClientData();
+  },
   methods: {
+    writeClientData(userId, name, email, imageUrl) {
+      // database.ref("users/" + userId).set({
+      //   username: 'JAASIEL',
+      //   email: 'maalaagasz@gmail.com',
+      //   profile_picture: 'https://randomuser.me/api/portraits/men/54.jpg'
+      // });
+    },
     upperCasedName() {
       this.name.toUpperCase();
     },
