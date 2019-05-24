@@ -34,17 +34,17 @@
           >
             <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="date"
+                v-model="bornDate"
                 label="Fecha de nacimiento"
-                :error-messages="dateErrors"
+                :error-messages="bornDateErrors"
                 readonly
                 v-on="on"
-                @input="$v.date.$touch()"
-                @blur="$v.date.$touch()"
+                @input="$v.bornDate.$touch()"
+                @blur="$v.bornDate.$touch()"
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="date"
+              v-model="bornDate"
               ref="picker"
               :max="maxDate"
               min="1950-01-01"
@@ -67,7 +67,7 @@
         <v-flex xs12 md4>
           <v-text-field
             v-model="apaterno"
-            :error-messages="nameErrors"
+            :error-messages="apaternoErrors"
             :counter="15"
             label="Apellido paterno"
             required
@@ -78,7 +78,7 @@
         <v-flex xs12 md4>
           <v-text-field
             v-model="amaterno"
-            :error-messages="nameErrors"
+            :error-messages="amaternoErrors"
             :counter="15"
             label="Apellido materno"
             required
@@ -125,15 +125,15 @@
         </v-flex>
         <v-flex xs4>
           <v-select
-            v-model="select"
+            v-model="entidad"
             :items="items"
             item-text="label"
             item-value="value"
-            :error-messages="selectErrors"
+            :error-messages="entidadErrors"
             label="Entidad de nacimiento"
             required
-            @change="$v.select.$touch()"
-            @blur="$v.select.$touch()"
+            @change="$v.entidad.$touch()"
+            @blur="$v.entidad.$touch()"
           ></v-select>
         </v-flex>
         <v-flex xs12>
@@ -171,18 +171,19 @@
 <script>
 import { validationMixin } from "vuelidate";
 import { required, maxLength, between } from "vuelidate/lib/validators";
+import config from '../config'
 
 export default {
   name: "NuevoCliente",
   mixins: [validationMixin],
   validations: {
-    date: { required, maxLength: maxLength(10) },
+    bornDate: { required, maxLength: maxLength(10) },
     name: { required, maxLength: maxLength(30) },
     apaterno: { required, maxLength: maxLength(15) },
     amaterno: { required, maxLength: maxLength(15) },
     request: { required, between: between(1, 99999), maxLength: maxLength(5) },
     direccion: { required },
-    select: { required },
+    entidad: { required },
     sexo: { required },
     edocivil: { required },
     curp: { required, maxLength: maxLength(18) },
@@ -196,8 +197,8 @@ export default {
   },
   data() {
     return {
-      request: "",
-      date: null,
+      db : config.db,
+      request: "",      
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -209,11 +210,12 @@ export default {
       name: "",
       apaterno: "",
       amaterno: "",
+      bornDate: null,
       curp: "",
       ocr: "",
       direccion: "",
       telefono: "",
-      select: null,
+      entidad: null,
       items: [
         { id: "MEX-AGS", value: "AS", label: "Aguascalientes (AGS)" },
         { id: "MEX-BCN", value: "BC", label: "Baja California Norte (BCN)" },
@@ -262,11 +264,7 @@ export default {
   },
   methods: {
     writeClientData(userId, name, email, imageUrl) {
-      // database.ref("users/" + userId).set({
-      //   username: 'JAASIEL',
-      //   email: 'maalaagasz@gmail.com',
-      //   profile_picture: 'https://randomuser.me/api/portraits/men/54.jpg'
-      // });
+      this.db.ref("clientes/").push(this.nuevoCliente);
     },
     upperCasedName() {
       this.name.toUpperCase();
@@ -278,7 +276,7 @@ export default {
       this.$v.$reset();
       this.name = "";
       this.email = "";
-      this.select = null;
+      this.entidad = null;
       this.checkbox = false;
     },
     saveDate(date) {
@@ -286,10 +284,10 @@ export default {
     }
   },
   computed: {
-    selectErrors() {
+    entidadErrors() {
       const errors = [];
-      if (!this.$v.select.$dirty) return errors;
-      !this.$v.select.required && errors.push("Item is required");
+      if (!this.$v.entidad.$dirty) return errors;
+      !this.$v.entidad.required && errors.push("Este campo es obligatorio");
       return errors;
     },
     requestErrors() {
@@ -311,6 +309,22 @@ export default {
       !this.$v.name.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
+    amaternoErrors() {
+      const errors = [];
+      if (!this.$v.amaterno.$dirty) return errors;
+      !this.$v.amaterno.maxLength &&
+        errors.push("El valor introducido es incorrecto.");
+      !this.$v.amaterno.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
+    apaternoErrors() {
+      const errors = [];
+      if (!this.$v.apaterno.$dirty) return errors;
+      !this.$v.apaterno.maxLength &&
+        errors.push("El valor introducido es incorrecto.");
+      !this.$v.apaterno.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
     sexoErrors() {
       const errors = [];
       if (!this.$v.sexo.$dirty) return errors;
@@ -325,12 +339,12 @@ export default {
       !this.$v.direccion.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
-    dateErrors() {
+    bornDateErrors() {
       const errors = [];
-      if (!this.$v.date.$dirty) return errors;
-      !this.$v.date.maxLength &&
+      if (!this.$v.bornDate.$dirty) return errors;
+      !this.$v.bornDate.maxLength &&
         errors.push("La fecha de nacimiento es incorrecta.");
-      !this.$v.date.required && errors.push("Este campo es obligatorio.");
+      !this.$v.bornDate.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     curpErrors() {
