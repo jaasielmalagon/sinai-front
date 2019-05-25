@@ -4,6 +4,7 @@ import Login from './views/Login'
 import NotFound from './views/NotFound'
 import Home from './views/Home'
 import Prestamos from './views/Prestamos'
+import Clientes from './views/Clientes'
 
 Vue.use(Router);
 
@@ -25,6 +26,11 @@ export default new Router({
             path: '/prestamos',
             name: 'prestamos',
             component: Prestamos
+        },
+        {
+            path: '/clientes',
+            name: 'clientes',
+            component: Clientes
         },
         { path: '*', component: NotFound }
     ]

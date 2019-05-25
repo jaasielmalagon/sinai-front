@@ -8,14 +8,13 @@
               <v-btn v-on="on" fab dark small color="teal">
                 <v-icon dark>add</v-icon>
               </v-btn>
-              <!-- <v-btn color="primary" dark v-on="on">Open Dialog</v-btn> -->
             </template>
             <v-card>
               <v-toolbar dark color="primary">
                 <v-btn icon dark @click="nuevo = false">
                   <v-icon>close</v-icon>
                 </v-btn>
-                <v-toolbar-title>Nuevo prestamo</v-toolbar-title>
+                <v-toolbar-title>Nuevo cliente</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
                   <v-btn dark flat @click="nuevo = false">Guardar</v-btn>
@@ -52,7 +51,6 @@
                 </v-card>
               </v-flex>
               <v-divider class="divisor"></v-divider>
-
             </v-card>
           </v-dialog>
           <v-btn @click="renew" fab dark small color="teal">
@@ -63,7 +61,7 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12>
-        <prestamos-table></prestamos-table>
+        <clientes-table></clientes-table>
       </v-flex>
     </v-layout>
   </v-container>
@@ -71,11 +69,12 @@
 
 <script>
 import NuevoCliente from "../components/nuevoClienteForm";
-import PrestamosTable from "../components/PrestamosTable";
+import ClientesTable from "../components/ClientesTable";
+import ReferenciaForm from "../components/ReferenciaForm";
 
 export default {
-  name: "Prestamos",
-  components: { NuevoCliente, PrestamosTable },
+  name: "Clientes",
+  components: { NuevoCliente, ClientesTable, ReferenciaForm },
   data() {
     return {
       nuevo: false,

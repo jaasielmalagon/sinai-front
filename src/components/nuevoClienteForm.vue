@@ -34,7 +34,7 @@
           >
             <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="bornDate"
+                v-model="nuevoCliente.bornDate"
                 label="Fecha de nacimiento"
                 :error-messages="bornDateErrors"
                 readonly
@@ -44,7 +44,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="bornDate"
+              v-model="nuevoCliente.bornDate"
               ref="picker"
               :max="maxDate"
               min="1950-01-01"
@@ -54,19 +54,18 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            :v-model="name"
+            :v-model="nuevoCliente.name"
             :error-messages="nameErrors"
             :counter="30"
             label="Nombre"
             required
-            @keyup="name.toUpperCase()"
             @input="$v.name.$touch()"
             @blur="$v.name.$touch()"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            v-model="apaterno"
+            v-model="nuevoCliente.apaterno"
             :error-messages="apaternoErrors"
             :counter="15"
             label="Apellido paterno"
@@ -77,7 +76,7 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            v-model="amaterno"
+            v-model="nuevoCliente.amaterno"
             :error-messages="amaternoErrors"
             :counter="15"
             label="Apellido materno"
@@ -88,7 +87,7 @@
         </v-flex>
         <v-flex xs12 md6>
           <v-text-field
-            v-model="curp"
+            v-model="nuevoCliente.curp"
             :error-messages="curpErrors"
             :counter="18"
             label="CURP"
@@ -99,7 +98,7 @@
         </v-flex>
         <v-flex xs12 md6>
           <v-text-field
-            v-model="ocr"
+            v-model="nuevoCliente.ocr"
             :error-messages="ocrErrors"
             :counter="13"
             label="Clave de elector"
@@ -109,7 +108,7 @@
           ></v-text-field>
         </v-flex>
         <v-flex xs4>
-          <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
+          <v-radio-group row v-model="nuevoCliente.sexo" :error-messages="sexoErrors">
             <div>Sexo:</div>
             <v-radio label="Hombre" value="H"></v-radio>
             <v-radio label="Mujer" value="M"></v-radio>
@@ -125,7 +124,7 @@
         </v-flex>
         <v-flex xs4>
           <v-select
-            v-model="entidad"
+            v-model="nuevoCliente.entidad"
             :items="items"
             item-text="label"
             item-value="value"
@@ -138,7 +137,7 @@
         </v-flex>
         <v-flex xs12>
           <v-text-field
-            v-model="direccion"
+            v-model="nuevoCliente.direccion"
             :error-messages="addressErrors"
             label="Direccion particular"
             required
@@ -148,7 +147,7 @@
         </v-flex>
         <v-flex xs4>
           <v-text-field
-            v-model="telefono"
+            v-model="nuevoCliente.telefono"
             :error-messages="phoneErrors"
             :counter="10"
             label="Telefono celular"
@@ -171,7 +170,7 @@
 <script>
 import { validationMixin } from "vuelidate";
 import { required, maxLength, between } from "vuelidate/lib/validators";
-import config from '../config'
+import config from "../config";
 
 export default {
   name: "NuevoCliente",
@@ -197,8 +196,8 @@ export default {
   },
   data() {
     return {
-      db : config.db,
-      request: "",      
+      db: config.db,
+      request: "",
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -207,15 +206,6 @@ export default {
         "-" +
         new Date().toISOString().substr(8, 2),
       menu: false,
-      name: "",
-      apaterno: "",
-      amaterno: "",
-      bornDate: null,
-      curp: "",
-      ocr: "",
-      direccion: "",
-      telefono: "",
-      entidad: null,
       items: [
         { id: "MEX-AGS", value: "AS", label: "Aguascalientes (AGS)" },
         { id: "MEX-BCN", value: "BC", label: "Baja California Norte (BCN)" },
@@ -250,8 +240,31 @@ export default {
         { id: "MEX-YUC", value: "YN", label: "Yucatán (YUC)" },
         { id: "MEX-ZAC", value: "ZS", label: "Zacatecas (ZAC)" }
       ],
-      sexo: false,
-      switch1: false
+      switch1: false,
+      nuevoCliente: {
+        name: "",
+        apaterno: "",
+        amaterno: "",
+        bornDate: "",
+        sexo: false,
+        curp: "",
+        ocr: "",
+        direccion: "",
+        telefono: "",
+        entidad: ""
+      },
+      defaultCliente: {
+        name: "",
+        apaterno: "",
+        amaterno: "",
+        bornDate: "",
+        sexo: false,
+        curp: "",
+        ocr: "",
+        direccion: "",
+        telefono: "",
+        entidad: ""
+      }
     };
   },
   watch: {
@@ -263,8 +276,15 @@ export default {
     this.writeClientData();
   },
   methods: {
-    writeClientData(userId, name, email, imageUrl) {
-      this.db.ref("clientes/").push(this.nuevoCliente);
+    writeClientData() {
+      //this.db.ref("clientes/").push(this.nuevoCliente);
+      this.db.ref("clientes/").push({
+        nombre: "MONICA",
+        apellido: "TELLEZ",
+        edad: 25,
+        f_nac: "31/07/1992"
+      });
+      console.log("datos guardados...")
     },
     upperCasedName() {
       this.name.toUpperCase();
@@ -274,10 +294,7 @@ export default {
     },
     clear() {
       this.$v.$reset();
-      this.name = "";
-      this.email = "";
-      this.entidad = null;
-      this.checkbox = false;
+      this.nuevoCliente = this.defaultCliente;
     },
     saveDate(date) {
       this.$refs.menu.save(date);
@@ -344,7 +361,8 @@ export default {
       if (!this.$v.bornDate.$dirty) return errors;
       !this.$v.bornDate.maxLength &&
         errors.push("La fecha de nacimiento es incorrecta.");
-      !this.$v.bornDate.required && errors.push("Este campo es obligatorio.");
+      !this.$v.nuevoCliente.bornDate.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     curpErrors() {
