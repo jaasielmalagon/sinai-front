@@ -70,12 +70,11 @@
 </template>
 
 <script>
-import NuevoCliente from "../components/nuevoClienteForm";
 import PrestamosTable from "../components/PrestamosTable";
 
 export default {
   name: "Prestamos",
-  components: { NuevoCliente, PrestamosTable },
+  components: { PrestamosTable },
   data() {
     return {
       nuevo: false,

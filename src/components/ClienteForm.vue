@@ -34,7 +34,7 @@
           >
             <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="nuevoCliente.bornDate"
+                v-model="bornDate"
                 label="Fecha de nacimiento"
                 :error-messages="bornDateErrors"
                 readonly
@@ -44,7 +44,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="nuevoCliente.bornDate"
+              v-model="bornDate"
               ref="picker"
               :max="maxDate"
               min="1950-01-01"
@@ -54,40 +54,40 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            :v-model="nuevoCliente.name"
-            :error-messages="nameErrors"
+            :v-model="firstname"
+            :error-messages="firstnameErrors"
             :counter="30"
             label="Nombre"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.firstname.$touch()"
+            @blur="$v.firstname.$touch()"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            v-model="nuevoCliente.apaterno"
+            v-model="apaterno"
             :error-messages="apaternoErrors"
-            :counter="15"
+            :counter="20"
             label="Apellido paterno"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.apaterno.$touch()"
+            @blur="$v.apaterno.$touch()"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            v-model="nuevoCliente.amaterno"
+            v-model="amaterno"
             :error-messages="amaternoErrors"
-            :counter="15"
+            :counter="20"
             label="Apellido materno"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.amaterno.$touch()"
+            @blur="$v.amaterno.$touch()"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md6>
           <v-text-field
-            v-model="nuevoCliente.curp"
+            v-model="curp"
             :error-messages="curpErrors"
             :counter="18"
             label="CURP"
@@ -98,7 +98,7 @@
         </v-flex>
         <v-flex xs12 md6>
           <v-text-field
-            v-model="nuevoCliente.ocr"
+            v-model="ocr"
             :error-messages="ocrErrors"
             :counter="13"
             label="Clave de elector"
@@ -108,7 +108,7 @@
           ></v-text-field>
         </v-flex>
         <v-flex xs4>
-          <v-radio-group row v-model="nuevoCliente.sexo" :error-messages="sexoErrors">
+          <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
             <div>Sexo:</div>
             <v-radio label="Hombre" value="H"></v-radio>
             <v-radio label="Mujer" value="M"></v-radio>
@@ -124,7 +124,7 @@
         </v-flex>
         <v-flex xs4>
           <v-select
-            v-model="nuevoCliente.entidad"
+            v-model="entidad"
             :items="items"
             item-text="label"
             item-value="value"
@@ -137,7 +137,7 @@
         </v-flex>
         <v-flex xs12>
           <v-text-field
-            v-model="nuevoCliente.direccion"
+            v-model="direccion"
             :error-messages="addressErrors"
             label="Direccion particular"
             required
@@ -147,7 +147,7 @@
         </v-flex>
         <v-flex xs4>
           <v-text-field
-            v-model="nuevoCliente.telefono"
+            v-model="telefono"
             :error-messages="phoneErrors"
             :counter="10"
             label="Telefono celular"
@@ -177,9 +177,9 @@ export default {
   mixins: [validationMixin],
   validations: {
     bornDate: { required, maxLength: maxLength(10) },
-    name: { required, maxLength: maxLength(30) },
-    apaterno: { required, maxLength: maxLength(15) },
-    amaterno: { required, maxLength: maxLength(15) },
+    firstname: { required, maxLength: maxLength(30) },
+    apaterno: { required, maxLength: maxLength(20) },
+    amaterno: { required, maxLength: maxLength(20) },
     request: { required, between: between(1, 99999), maxLength: maxLength(5) },
     direccion: { required },
     entidad: { required },
@@ -188,16 +188,21 @@ export default {
     curp: { required, maxLength: maxLength(18) },
     ocr: { required, maxLength: maxLength(13) },
     telefono: { required, maxLength: maxLength(10) },
-    checkbox: {
-      checked(val) {
-        return val;
-      }
-    }
   },
   data() {
     return {
       db: config.db,
       request: "",
+      firstname: "",
+      apaterno: "",
+      amaterno: "",
+      bornDate: "",
+      sexo: false,
+      curp: "",
+      ocr: "",
+      direccion: "",
+      telefono: "",
+      entidad: "",
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -242,7 +247,7 @@ export default {
       ],
       switch1: false,
       nuevoCliente: {
-        name: "",
+        firstname: "",
         apaterno: "",
         amaterno: "",
         bornDate: "",
@@ -254,7 +259,7 @@ export default {
         entidad: ""
       },
       defaultCliente: {
-        name: "",
+        firstname: "",
         apaterno: "",
         amaterno: "",
         bornDate: "",
@@ -273,27 +278,19 @@ export default {
     }
   },
   mounted: function() {
-    this.writeClientData();
+    // this.writeClientData();
   },
   methods: {
     writeClientData() {
       //this.db.ref("clientes/").push(this.nuevoCliente);
-      this.db.ref("clientes/").push({
-        nombre: "MONICA",
-        apellido: "TELLEZ",
-        edad: 25,
-        f_nac: "31/07/1992"
-      });
-      console.log("datos guardados...")
-    },
-    upperCasedName() {
-      this.name.toUpperCase();
+      this.db.ref("clientes/").push(this.nuevoCliente);
+      console.log("datos guardados...");
     },
     submit() {
       this.$v.$touch();
     },
     clear() {
-      this.$v.$reset();
+      // this.$v.$reset();
       this.nuevoCliente = this.defaultCliente;
     },
     saveDate(date) {
@@ -301,36 +298,29 @@ export default {
     }
   },
   computed: {
-    entidadErrors() {
-      const errors = [];
-      if (!this.$v.entidad.$dirty) return errors;
-      !this.$v.entidad.required && errors.push("Este campo es obligatorio");
-      return errors;
-    },
     requestErrors() {
       const errors = [];
       if (!this.$v.request.$dirty) return errors;
       !this.$v.request.maxLength &&
         errors.push("El numero de solicitud indicado es demasiado extenso.");
-      !this.$v.request.required &&
-        errors.push("Indique el numero de solicitud.");
+      !this.$v.request.required && errors.push("Este campo es obligatorio.");
       !this.$v.request.between &&
         errors.push("El numero de solicitud es invalido.");
       return errors;
     },
-    nameErrors() {
+    firstnameErrors() {
       const errors = [];
-      if (!this.$v.name.$dirty) return errors;
-      !this.$v.name.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
-      !this.$v.name.required && errors.push("Este campo es obligatorio.");
+      if (!this.$v.firstname.$dirty) return errors;
+      !this.$v.firstname.maxLength &&
+        errors.push("El valor introducido es demasiado largo.");
+      !this.$v.firstname.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     amaternoErrors() {
       const errors = [];
       if (!this.$v.amaterno.$dirty) return errors;
       !this.$v.amaterno.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.amaterno.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
@@ -338,15 +328,20 @@ export default {
       const errors = [];
       if (!this.$v.apaterno.$dirty) return errors;
       !this.$v.apaterno.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.apaterno.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     sexoErrors() {
       const errors = [];
       if (!this.$v.sexo.$dirty) return errors;
-      !this.$v.sexo.checked && errors.push("Indique el sexo del solicitante.");
       !this.$v.email.required && errors.push("Este campo es obligatorio");
+      return errors;
+    },
+    entidadErrors() {
+      const errors = [];
+      if (!this.$v.entidad.$dirty) return errors;
+      !this.$v.entidad.required && errors.push("Este campo es obligatorio");
       return errors;
     },
     addressErrors() {
@@ -361,15 +356,14 @@ export default {
       if (!this.$v.bornDate.$dirty) return errors;
       !this.$v.bornDate.maxLength &&
         errors.push("La fecha de nacimiento es incorrecta.");
-      !this.$v.nuevoCliente.bornDate.required &&
-        errors.push("Este campo es obligatorio.");
+      !this.$v.bornDate.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     curpErrors() {
       const errors = [];
       if (!this.$v.curp.$dirty) return errors;
       !this.$v.curp.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.curp.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
@@ -377,7 +371,7 @@ export default {
       const errors = [];
       if (!this.$v.ocr.$dirty) return errors;
       !this.$v.ocr.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.ocr.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
@@ -385,7 +379,7 @@ export default {
       const errors = [];
       if (!this.$v.telefono.$dirty) return errors;
       !this.$v.telefono.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.telefono.required && errors.push("Este campo es obligatorio.");
       return errors;
     }

@@ -31,7 +31,7 @@
                 </v-card>
               </v-flex>
               <v-divider class="divisor"></v-divider>
-
+<!-- 
               <v-flex  v-if="married" xs10 d-flex offset-xs1>
                 <v-card>
                   <v-toolbar color="green darken-1" dark>
@@ -51,6 +51,16 @@
                 </v-card>
               </v-flex>
               <v-divider class="divisor"></v-divider>
+
+              <v-flex xs10 d-flex offset-xs1>
+                <v-card>
+                  <v-toolbar color="green darken-1" dark>
+                    <v-toolbar-title>Datos del aval</v-toolbar-title>
+                  </v-toolbar>
+                  <referencia-form></referencia-form>
+                </v-card>
+              </v-flex>
+              <v-divider class="divisor"></v-divider> -->
             </v-card>
           </v-dialog>
           <v-btn @click="renew" fab dark small color="teal">
@@ -68,7 +78,7 @@
 </template>
 
 <script>
-import NuevoCliente from "../components/nuevoClienteForm";
+import NuevoCliente from "../components/ClienteForm";
 import ClientesTable from "../components/ClientesTable";
 import ReferenciaForm from "../components/ReferenciaForm";
 
