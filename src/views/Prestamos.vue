@@ -23,35 +23,7 @@
               </v-toolbar>
               <v-divider class="divisor"></v-divider>
 
-              <v-flex xs10 d-flex offset-xs1>
-                <v-card>
-                  <v-toolbar color="green darken-1" dark>
-                    <v-toolbar-title>Datos personales</v-toolbar-title>
-                  </v-toolbar>
-                  <nuevo-cliente v-on:esCasado="isMarried($event)"></nuevo-cliente>
-                </v-card>
-              </v-flex>
-              <v-divider class="divisor"></v-divider>
-
-              <v-flex  v-if="married" xs10 d-flex offset-xs1>
-                <v-card>
-                  <v-toolbar color="green darken-1" dark>
-                    <v-toolbar-title>Datos del conyuge</v-toolbar-title>
-                  </v-toolbar>
-                  <referencia-form></referencia-form>
-                </v-card>
-              </v-flex>
-              <v-divider v-if="married" class="divisor"></v-divider>
-
-              <v-flex xs10 d-flex offset-xs1>
-                <v-card>
-                  <v-toolbar color="green darken-1" dark>
-                    <v-toolbar-title>Datos de la referencia</v-toolbar-title>
-                  </v-toolbar>
-                  <referencia-form></referencia-form>
-                </v-card>
-              </v-flex>
-              <v-divider class="divisor"></v-divider>
+             <clientes-table></clientes-table>
 
             </v-card>
           </v-dialog>
@@ -71,10 +43,11 @@
 
 <script>
 import PrestamosTable from "../components/PrestamosTable";
+import ClientesTable from "../components/ClientesTable"
 
 export default {
   name: "Prestamos",
-  components: { PrestamosTable },
+  components: { PrestamosTable, ClientesTable },
   data() {
     return {
       nuevo: false,

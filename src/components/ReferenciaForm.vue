@@ -8,7 +8,7 @@
   <v-card-text class="px-5">-->
   <v-form>
     <v-container>
-            <v-layout row wrap>
+      <v-layout row wrap>
         <v-flex xs12 md3>
           <v-text-field
             v-model="request"
@@ -34,17 +34,17 @@
           >
             <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="date"
+                v-model="bornDate"
                 label="Fecha de nacimiento"
-                :error-messages="dateErrors"
+                :error-messages="bornDateErrors"
                 readonly
                 v-on="on"
-                @input="$v.date.$touch()"
-                @blur="$v.date.$touch()"
+                @input="$v.bornDate.$touch()"
+                @blur="$v.bornDate.$touch()"
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="date"
+              v-model="bornDate"
               ref="picker"
               :max="maxDate"
               min="1950-01-01"
@@ -54,50 +54,56 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            :v-model="name"
-            :error-messages="nameErrors"
+            v-model="firstname"
+            :error-messages="firstnameErrors"
             :counter="30"
             label="Nombre"
             required
-            @keyup="name.toUpperCase()"
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.firstname.$touch()"
+            @blur="$v.firstname.$touch()"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
             v-model="apaterno"
-            :error-messages="nameErrors"
-            :counter="15"
+            :error-messages="apaternoErrors"
+            :counter="20"
             label="Apellido paterno"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.apaterno.$touch()"
+            @blur="$v.apaterno.$touch()"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
             v-model="amaterno"
-            :error-messages="nameErrors"
-            :counter="15"
+            :error-messages="amaternoErrors"
+            :counter="20"
             label="Apellido materno"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.amaterno.$touch()"
+            @blur="$v.amaterno.$touch()"
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 md6>
+        <v-flex xs5>
           <v-text-field
             v-model="curp"
-            :error-messages="curpErrors"
-            :counter="18"
             label="CURP"
-            required
-            @input="$v.curp.$touch()"
-            @blur="$v.curp.$touch()"
+            readonly
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 md6>
+        <v-flex xs3>
+          <v-text-field
+            v-model="homoclave"
+            :error-messages="homoclaveErrors"
+            :counter="2"
+            label="Homoclave"
+            required
+            @input="$v.homoclave.$touch()"
+            @blur="$v.homoclave.$touch()"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs4>
           <v-text-field
             v-model="ocr"
             :error-messages="ocrErrors"
@@ -108,37 +114,27 @@
             @blur="$v.ocr.$touch()"
           ></v-text-field>
         </v-flex>
-        <v-flex xs4>
+        <v-flex xs12>
           <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
             <div>Sexo:</div>
             <v-radio label="Hombre" value="H"></v-radio>
             <v-radio label="Mujer" value="M"></v-radio>
           </v-radio-group>
         </v-flex>
-        <v-flex xs4>
+        <v-flex xs7>
           <v-select
-            v-model="select"
+            v-model="entidad"
             :items="items"
             item-text="label"
             item-value="value"
-            :error-messages="selectErrors"
+            :error-messages="entidadErrors"
             label="Entidad de nacimiento"
             required
-            @change="$v.select.$touch()"
-            @blur="$v.select.$touch()"
+            @change="$v.entidad.$touch()"
+            @blur="$v.entidad.$touch()"
           ></v-select>
         </v-flex>
-        <v-flex xs12>
-          <v-text-field
-            v-model="direccion"
-            :error-messages="addressErrors"
-            label="Direccion particular"
-            required
-            @input="$v.direccion.$touch()"
-            @blur="$v.direccion.$touch()"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs4>
+        <v-flex xs5>
           <v-text-field
             v-model="telefono"
             :error-messages="phoneErrors"
@@ -149,6 +145,16 @@
             @blur="$v.telefono.$touch()"
           ></v-text-field>
         </v-flex>
+        <v-flex xs12>
+          <v-text-field
+            v-model="direccion"
+            :error-messages="addressErrors"
+            label="Direccion particular"
+            required
+            @input="$v.direccion.$touch()"
+            @blur="$v.direccion.$touch()"
+          ></v-text-field>
+        </v-flex>        
       </v-layout>
     </v-container>
   </v-form>
@@ -168,28 +174,32 @@ export default {
   name: "ReferenciaForm",
   mixins: [validationMixin],
   validations: {
-    date: { required, maxLength: maxLength(10) },
-    name: { required, maxLength: maxLength(30) },
-    apaterno: { required, maxLength: maxLength(15) },
-    amaterno: { required, maxLength: maxLength(15) },
+    bornDate: { required, maxLength: maxLength(10) },
+    firstname: { required, maxLength: maxLength(30) },
+    apaterno: { required, maxLength: maxLength(20) },
+    amaterno: { required, maxLength: maxLength(20) },
     request: { required, between: between(1, 99999), maxLength: maxLength(5) },
     direccion: { required },
-    select: { required },
+    entidad: { required },
     sexo: { required },
-    edocivil: { required },
-    curp: { required, maxLength: maxLength(18) },
+    homoclave: { required, maxLength: maxLength(2) },
     ocr: { required, maxLength: maxLength(13) },
     telefono: { required, maxLength: maxLength(10) },
-    checkbox: {
-      checked(val) {
-        return val;
-      }
-    }
   },
   data() {
-    return {
+    return {      
       request: "",
-      date: null,
+      firstname: "",
+      apaterno: "",
+      amaterno: "",
+      bornDate: "",
+      sexo: false,
+      curp: "",
+      homoclave: "",
+      ocr: "",
+      direccion: "",
+      telefono: "",
+      entidad: "",
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -198,14 +208,6 @@ export default {
         "-" +
         new Date().toISOString().substr(8, 2),
       menu: false,
-      name: "",
-      apaterno: "",
-      amaterno: "",
-      curp: "",
-      ocr: "",
-      direccion: "",
-      telefono: "",
-      select: null,
       items: [
         { id: "MEX-AGS", value: "AS", label: "Aguascalientes (AGS)" },
         { id: "MEX-BCN", value: "BC", label: "Baja California Norte (BCN)" },
@@ -240,40 +242,115 @@ export default {
         { id: "MEX-YUC", value: "YN", label: "Yucatán (YUC)" },
         { id: "MEX-ZAC", value: "ZS", label: "Zacatecas (ZAC)" }
       ],
-      sexo: false
+      nuevoCliente: {
+        firstname: "",
+        apaterno: "",
+        amaterno: "",
+        bornDate: "",
+        sexo: false,
+        curp: "",
+        ocr: "",
+        direccion: "",
+        telefono: "",
+        entidad: ""
+      },
+      defaultCliente: {
+        firstname: "",
+        apaterno: "",
+        amaterno: "",
+        bornDate: "",
+        sexo: false,
+        curp: "",
+        ocr: "",
+        direccion: "",
+        telefono: "",
+        entidad: ""
+      }
     };
   },
-  computed: {
-    selectErrors() {
-      const errors = [];
-      if (!this.$v.select.$dirty) return errors;
-      !this.$v.select.required && errors.push("Item is required");
-      return errors;
+  watch: {
+    menu(val) {
+      val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
+    }
+  },
+  mounted: function() {
+    // this.writeClientData();
+  },
+  methods: {
+    writeClientData() {
+      //this.db.ref("clientes/").push(this.nuevoCliente);
+      this.db.ref("clientes/").push(this.nuevoCliente);
+      console.log("datos guardados...");
     },
+    submit() {
+      this.$v.$touch();
+    },
+    clear() {
+      // this.$v.$reset();
+      this.nuevoCliente = this.defaultCliente;
+      this.request = "";
+      this.firstname = "";
+      this.apaterno = "";
+      this.amaterno = "";
+      this.bornDate = "";
+      this.sexo = false;
+      this.curp = "";
+      this.homoclave = "";
+      this.ocr = "";
+      this.direccion = "";
+      this.telefono = "";
+      this.entidad = "";
+      this.menu = false;
+    },
+    saveDate(date) {
+      this.$refs.menu.save(date);
+    }
+  },
+  computed: {
     requestErrors() {
       const errors = [];
       if (!this.$v.request.$dirty) return errors;
       !this.$v.request.maxLength &&
         errors.push("El numero de solicitud indicado es demasiado extenso.");
-      !this.$v.request.required &&
-        errors.push("Indique el numero de solicitud.");
+      !this.$v.request.required && errors.push("Este campo es obligatorio.");
       !this.$v.request.between &&
         errors.push("El numero de solicitud es invalido.");
       return errors;
     },
-    nameErrors() {
+    firstnameErrors() {
       const errors = [];
-      if (!this.$v.name.$dirty) return errors;
-      !this.$v.name.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
-      !this.$v.name.required && errors.push("Este campo es obligatorio.");
+      if (!this.$v.firstname.$dirty) return errors;
+      !this.$v.firstname.maxLength &&
+        errors.push("El valor introducido es demasiado largo.");
+      !this.$v.firstname.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
+    amaternoErrors() {
+      const errors = [];
+      if (!this.$v.amaterno.$dirty) return errors;
+      !this.$v.amaterno.maxLength &&
+        errors.push("El valor introducido es demasiado largo.");
+      !this.$v.amaterno.required && errors.push("Este campo es obligatorio.");
+      return errors;
+    },
+    apaternoErrors() {
+      const errors = [];
+      if (!this.$v.apaterno.$dirty) return errors;
+      !this.$v.apaterno.maxLength &&
+        errors.push("El valor introducido es demasiado largo.");
+      !this.$v.apaterno.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     sexoErrors() {
       const errors = [];
       if (!this.$v.sexo.$dirty) return errors;
-      !this.$v.sexo.checked && errors.push("Indique el sexo del solicitante.");
       !this.$v.email.required && errors.push("Este campo es obligatorio");
+      return errors;
+    },
+    entidadErrors() {
+      const errors = [];
+      if (!this.$v.entidad.$dirty) return errors;
+      !this.$v.entidad.required && errors.push("Este campo es obligatorio");
       return errors;
     },
     addressErrors() {
@@ -283,27 +360,27 @@ export default {
       !this.$v.direccion.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
-    dateErrors() {
+    bornDateErrors() {
       const errors = [];
-      if (!this.$v.date.$dirty) return errors;
-      !this.$v.date.maxLength &&
+      if (!this.$v.bornDate.$dirty) return errors;
+      !this.$v.bornDate.maxLength &&
         errors.push("La fecha de nacimiento es incorrecta.");
-      !this.$v.date.required && errors.push("Este campo es obligatorio.");
+      !this.$v.bornDate.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
-    curpErrors() {
+    homoclaveErrors() {
       const errors = [];
-      if (!this.$v.curp.$dirty) return errors;
-      !this.$v.curp.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
-      !this.$v.curp.required && errors.push("Este campo es obligatorio.");
+      if (!this.$v.homoclave.$dirty) return errors;
+      !this.$v.homoclave.maxLength &&
+        errors.push("El valor introducido es demasiado largo.");
+      !this.$v.homoclave.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     ocrErrors() {
       const errors = [];
       if (!this.$v.ocr.$dirty) return errors;
       !this.$v.ocr.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.ocr.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
@@ -311,33 +388,9 @@ export default {
       const errors = [];
       if (!this.$v.telefono.$dirty) return errors;
       !this.$v.telefono.maxLength &&
-        errors.push("El valor introducido es incorrecto.");
+        errors.push("El valor introducido es demasiado largo.");
       !this.$v.telefono.required && errors.push("Este campo es obligatorio.");
       return errors;
-    }
-  },
-  watch: {
-    menu(val) {
-      val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
-    }
-  },
-  methods: {
-    upperCasedName() {
-      this.name.toUpperCase();
-    },
-    submit() {
-      this.$v.$touch();
-    },
-    clear() {
-      this.$v.$reset();
-      this.name = "";
-      this.email = "";
-      this.select = null;
-      this.checkbox = false;
-    },
-    saveDate(date) {
-      // console.log(this.$refs);
-      this.$refs.menu.save(date);
     }
   }
 };

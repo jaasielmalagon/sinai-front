@@ -31,7 +31,7 @@
                 </v-card>
               </v-flex>
               <v-divider class="divisor"></v-divider>
-<!-- 
+
               <v-flex  v-if="married" xs10 d-flex offset-xs1>
                 <v-card>
                   <v-toolbar color="green darken-1" dark>
@@ -60,7 +60,7 @@
                   <referencia-form></referencia-form>
                 </v-card>
               </v-flex>
-              <v-divider class="divisor"></v-divider> -->
+              <v-divider class="divisor"></v-divider>
             </v-card>
           </v-dialog>
           <v-btn @click="renew" fab dark small color="teal">

@@ -9,17 +9,6 @@
   <v-form>
     <v-container>
       <v-layout row wrap>
-        <v-flex xs12 md3>
-          <v-text-field
-            v-model="request"
-            :error-messages="requestErrors"
-            :counter="5"
-            label="Num. solicitud"
-            required
-            @input="$v.request.$touch()"
-            @blur="$v.request.$touch()"
-          ></v-text-field>
-        </v-flex>
         <v-flex xs12 md9>
           <v-menu
             ref="menu"
@@ -54,7 +43,7 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            :v-model="firstname"
+            v-model="firstname"
             :error-messages="firstnameErrors"
             :counter="30"
             label="Nombre"
@@ -85,18 +74,21 @@
             @blur="$v.amaterno.$touch()"
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 md6>
+        <v-flex xs5>
+          <v-text-field v-model="curp" label="CURP" readonly></v-text-field>
+        </v-flex>
+        <v-flex xs3>
           <v-text-field
-            v-model="curp"
-            :error-messages="curpErrors"
-            :counter="18"
-            label="CURP"
+            v-model="homoclave"
+            :error-messages="homoclaveErrors"
+            :counter="2"
+            label="Homoclave"
             required
-            @input="$v.curp.$touch()"
-            @blur="$v.curp.$touch()"
+            @input="$v.homoclave.$touch()"
+            @blur="$v.homoclave.$touch()"
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 md6>
+        <v-flex xs4>
           <v-text-field
             v-model="ocr"
             :error-messages="ocrErrors"
@@ -107,14 +99,14 @@
             @blur="$v.ocr.$touch()"
           ></v-text-field>
         </v-flex>
-        <v-flex xs4>
+        <v-flex xs7 md4>
           <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
             <div>Sexo:</div>
             <v-radio label="Hombre" value="H"></v-radio>
             <v-radio label="Mujer" value="M"></v-radio>
           </v-radio-group>
         </v-flex>
-        <v-flex xs4>
+        <v-flex xs5 md4>
           <v-switch
             @change="$emit('esCasado', switch1)"
             v-model="switch1"
@@ -122,7 +114,7 @@
             label="El solicitante es casado."
           ></v-switch>
         </v-flex>
-        <v-flex xs4>
+        <v-flex xs7>
           <v-select
             v-model="entidad"
             :items="items"
@@ -135,17 +127,7 @@
             @blur="$v.entidad.$touch()"
           ></v-select>
         </v-flex>
-        <v-flex xs12>
-          <v-text-field
-            v-model="direccion"
-            :error-messages="addressErrors"
-            label="Direccion particular"
-            required
-            @input="$v.direccion.$touch()"
-            @blur="$v.direccion.$touch()"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs4>
+        <v-flex xs5>
           <v-text-field
             v-model="telefono"
             :error-messages="phoneErrors"
@@ -156,20 +138,31 @@
             @blur="$v.telefono.$touch()"
           ></v-text-field>
         </v-flex>
+        <v-flex xs12>
+          <v-text-field
+            v-model="direccion"
+            :error-messages="addressErrors"
+            label="Direccion particular"
+            required
+            @input="$v.direccion.$touch()"
+            @blur="$v.direccion.$touch()"
+          ></v-text-field>
+        </v-flex>
       </v-layout>
     </v-container>
+    <v-btn color="green lighten-1" @click="writeClientData">Aceptar</v-btn>
+    <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
   </v-form>
-  <!-- </v-card-text>
-    <v-card-actions>
-      <v-btn color="green lighten-1" @click="submit">Aceptar</v-btn>
-      <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
-    </v-card-actions>
-  </v-card>-->
 </template>
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, maxLength, between } from "vuelidate/lib/validators";
+import {
+  required,
+  maxLength,
+  minLength,
+  between
+} from "vuelidate/lib/validators";
 import config from "../config";
 
 export default {
@@ -180,25 +173,24 @@ export default {
     firstname: { required, maxLength: maxLength(30) },
     apaterno: { required, maxLength: maxLength(20) },
     amaterno: { required, maxLength: maxLength(20) },
-    request: { required, between: between(1, 99999), maxLength: maxLength(5) },
-    direccion: { required },
+    direccion: { required, minLength: minLength(10) },
     entidad: { required },
     sexo: { required },
     edocivil: { required },
-    curp: { required, maxLength: maxLength(18) },
+    homoclave: { required, maxLength: maxLength(2) },
     ocr: { required, maxLength: maxLength(13) },
-    telefono: { required, maxLength: maxLength(10) },
+    telefono: { required, maxLength: maxLength(10) }
   },
   data() {
     return {
       db: config.db,
-      request: "",
       firstname: "",
       apaterno: "",
       amaterno: "",
       bornDate: "",
       sexo: false,
       curp: "",
+      homoclave: "",
       ocr: "",
       direccion: "",
       telefono: "",
@@ -272,42 +264,273 @@ export default {
       }
     };
   },
+  watch() {
+    // generateCurp() {
+      console.log("curp...");
+      if (
+        this.curp == "" &&
+        (this.firstname != "" &&
+          this.apaterno != "" &&
+          this.amaterno != "" &&
+          this.bornDate != "" &&
+          this.entidad != "" &&
+          this.sexo != "" &&
+          this.homoclave != "")
+      ) {
+        this.firstname.toUpperCase();
+        this.apaterno.toUpperCase();
+        this.amaterno == undefined ? "XXXXX" : this.amaterno.toUpperCase();
+        this.bornDate;
+        let apaternoFiltrado = this.filtrarApaterno();
+        let amaternoFiltrado = this.filtrarAmaterno();
+
+        let c1 =
+          apaternoFiltrado.substring(0, 1) == "Ñ"
+            ? "X"
+            : apaternoFiltrado.substring(0, 1);
+
+        let c2 = this.getSecondChar(apaternoFiltrado);
+        let c3 =
+          amaternoFiltrado.substring(0, 1) == "Ñ"
+            ? "X"
+            : amaternoFiltrado.substring(0, 1);
+        this.curp = c1 + c2 + c3;
+        let partirNombre = nombre.split(" ");
+        let nombreFiltrado = this.filtrarNombre();
+        this.setDateCurp();
+        this.curp += this.sexo + this.estado;
+        let consonantesApaterno = this.consonantesApaterno();
+        let consonantesAmaterno = this.consonantesAmaterno();
+        let consonantesNombre = this.consonantesNombre();
+
+        this.curp +=
+          consonantesApaterno[0] == "Ñ" ? "X" : consonantesApaterno[0];
+        this.curp +=
+          consonantesAmaterno[0] == "Ñ" ? "X" : consonantesAmaterno[0];
+        this.curp += consonantesNombre[0] == "Ñ" ? "X" : consonantesNombre[0];
+      }
+    // }
+  },
   watch: {
     menu(val) {
-      val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
+      val &&
+        setTimeout(() => {
+          return (this.$refs.picker.activePicker = "YEAR");
+        });
     }
   },
-  mounted: function() {
-    // this.writeClientData();
-  },
   methods: {
-    writeClientData() {
-      //this.db.ref("clientes/").push(this.nuevoCliente);
-      this.db.ref("clientes/").push(this.nuevoCliente);
-      console.log("datos guardados...");
+    consonantesNombre() {
+      let consonantesNombre = [];
+      for (let i = 1; i < nombreFiltrado.length; i++) {
+        //recopilar todas las consonantes del nombre a partir del segundo caracter (omitimos el primero) en un arreglo
+        if (
+          nombreFiltrado.charAt(i) != "A" &&
+          nombreFiltrado.charAt(i) != "E" &&
+          nombreFiltrado.charAt(i) != "I" &&
+          nombreFiltrado.charAt(i) != "O" &&
+          nombreFiltrado.charAt(i) != "U"
+        ) {
+          consonantesNombre.push(nombreFiltrado.charAt(i));
+        }
+      }
+      return consonantesNombre;
     },
-    submit() {
-      this.$v.$touch();
+    consonantesAmaterno() {
+      let consonantesAmaterno = [];
+      for (let i = 1; i < amaternoFiltrado.length; i++) {
+        //recopilar todas las consonantes del apellido materno a partir del segundo caracter (omitimos el primero) en un arreglo
+        if (
+          amaternoFiltrado.charAt(i) != "A" &&
+          amaternoFiltrado.charAt(i) != "E" &&
+          amaternoFiltrado.charAt(i) != "I" &&
+          amaternoFiltrado.charAt(i) != "O" &&
+          amaternoFiltrado.charAt(i) != "U"
+        ) {
+          consonantesAmaterno.push(amaternoFiltrado.charAt(i));
+        }
+      }
+      return consonantesAmaterno;
+    },
+    consonantesApaterno() {
+      let consonantesApaterno = [];
+      for (let i = 1; i < apaternoFiltrado.length; i++) {
+        //recopilar todas las consonantes del apellido paterno a partir del segundo caracter (omitimos el primero) en un arreglo
+        if (
+          apaternoFiltrado.charAt(i) != "A" &&
+          apaternoFiltrado.charAt(i) != "E" &&
+          apaternoFiltrado.charAt(i) != "I" &&
+          apaternoFiltrado.charAt(i) != "O" &&
+          apaternoFiltrado.charAt(i) != "U"
+        ) {
+          consonantesApaterno.push(apaternoFiltrado.charAt(i));
+        }
+      }
+      return consonantesApaterno;
+    },
+    setDateCurp() {
+      let year = this.bornDate.substring(2, 4);
+      let month = this.bornDate.substring(6, 7);
+      let day = this.bornDate.substring(9, 10);
+      month < 10
+        ? (this.curp += year + "0" + month)
+        : (this.curp += year + month);
+      day < 10
+        ? (this.curp += "0" + this.bornDate.day)
+        : (this.curp += this.bornDate.day);
+    },
+    getSecondChar(apaternoFiltrado) {
+      for (let i = 1; i < apaternoFiltrado.length; i++) {
+        if (
+          apaternoFiltrado.charAt(i) == "A" ||
+          apaternoFiltrado.charAt(i) == "E" ||
+          apaternoFiltrado.charAt(i) == "I" ||
+          apaternoFiltrado.charAt(i) == "O" ||
+          apaternoFiltrado.charAt(i) == "U"
+        ) {
+          return apaternoFiltrado.charAt(i);
+        }
+      }
+      return "X";
+    },
+    filtrarNombre() {
+      if (partirNombre.length >= 2) {
+        if (
+          partirNombre[0] == "JOSE" ||
+          partirNombre[0] == "MARIA" ||
+          partirNombre[0] == "JOSÉ" ||
+          partirNombre[0] == "MARÍA" ||
+          partirNombre[0] == "J" ||
+          partirNombre[0] == "MA" ||
+          partirNombre[0] == "J." ||
+          partirNombre[0] == "MA." ||
+          partirNombre[0] == "JOCE" ||
+          partirNombre[0] == "MARYA" ||
+          partirNombre[0] == "JOCÉ" ||
+          partirNombre[0] == "JOZE" ||
+          partirNombre[0] == "JOZÉ"
+        ) {
+          this.curp += partirNombre[1].substring(0, 1);
+          return partirNombre[1];
+        } else {
+          this.curp +=
+            nombre.substring(0, 1) == "Ñ" ? "X" : nombre.substring(0, 1);
+          return partirNombre[0];
+        }
+      } else {
+        this.curp +=
+          nombre.substring(0, 1) == "Ñ" ? "X" : nombre.substring(0, 1);
+        return nombre;
+      }
+    },
+    filtrarAmaterno() {
+      let partirAmaterno = this.amaterno.split(" ");
+      if (partirAmaterno.length >= 2) {
+        for (let i = 0; i < partirAmaterno.length; i++) {
+          if (
+            partirAmaterno[i] != "DA" &&
+            partirAmaterno[i] != "DAS" &&
+            partirAmaterno[i] != "DE" &&
+            partirAmaterno[i] != "DEL" &&
+            partirAmaterno[i] != "DER" &&
+            partirAmaterno[i] != "DI" &&
+            partirAmaterno[i] != "DIE" &&
+            partirAmaterno[i] != "DD" &&
+            partirAmaterno[i] != "EL" &&
+            partirAmaterno[i] != "LA" &&
+            partirAmaterno[i] != "LOS" &&
+            partirAmaterno[i] != "LAS" &&
+            partirAmaterno[i] != "LE" &&
+            partirAmaterno[i] != "LES" &&
+            partirAmaterno[i] != "MAC" &&
+            partirAmaterno[i] != "MC" &&
+            partirAmaterno[i] != "VAN" &&
+            partirAmaterno[i] != "VON" &&
+            partirAmaterno[i] != "Y"
+          ) {
+            return partirAmaterno[i];
+          }
+        }
+      } else {
+        return amaterno;
+      }
+    },
+    filtrarApaterno() {
+      let partirApaterno = this.apaterno.split(" ");
+      if (partirApaterno.length >= 2) {
+        for (let i = 0; i < partirApaterno.length; i++) {
+          if (
+            partirApaterno[i] != "DA" &&
+            partirApaterno[i] != "DAS" &&
+            partirApaterno[i] != "DE" &&
+            partirApaterno[i] != "DEL" &&
+            partirApaterno[i] != "DER" &&
+            partirApaterno[i] != "DI" &&
+            partirApaterno[i] != "DIE" &&
+            partirApaterno[i] != "DD" &&
+            partirApaterno[i] != "EL" &&
+            partirApaterno[i] != "LA" &&
+            partirApaterno[i] != "LOS" &&
+            partirApaterno[i] != "LAS" &&
+            partirApaterno[i] != "LE" &&
+            partirApaterno[i] != "LES" &&
+            partirApaterno[i] != "MAC" &&
+            partirApaterno[i] != "MC" &&
+            partirApaterno[i] != "VAN" &&
+            partirApaterno[i] != "VON" &&
+            partirApaterno[i] != "Y"
+          ) {
+            return partirApaterno[i];
+          }
+        }
+      } else {
+        return apaterno;
+      }
+    },
+    writeClientData() {
+      this.nuevoCliente.nombre = this.firstname.toUpperCase();
+      this.nuevoCliente.amaterno = this.amaterno;
+      this.nuevoCliente.amaterno = this.amaterno;
+      this.nuevoCliente.apaterno = this.apaterno;
+      this.nuevoCliente.bornDate = this.bornDate;
+      this.nuevoCliente.sexo = this.sexo;
+      this.nuevoCliente.ocr = this.ocr;
+      this.nuevoCliente.direccion = this.direccion;
+      this.nuevoCliente.telefono = this.telefono;
+      this.nuevoCliente.entidad = this.entidad;
+      this.nuevoCliente.curp =
+        this.curp.normalize("NFD").replace(/[\u0300-\u036f]/g, "") +
+        "" +
+        this.homoclave;
+      this.db
+        .ref("personas/")
+        .push(this.nuevoCliente)
+        .then(response => {
+          this.clear();
+          console.log(response);
+        });
     },
     clear() {
-      // this.$v.$reset();
       this.nuevoCliente = this.defaultCliente;
+      this.firstname = "";
+      this.apaterno = "";
+      this.amaterno = "";
+      this.bornDate = "";
+      this.sexo = false;
+      this.curp = "";
+      this.homoclave = "";
+      this.ocr = "";
+      this.direccion = "";
+      this.telefono = "";
+      this.entidad = "";
+      this.menu = false;
+      this.$v.$reset();
     },
     saveDate(date) {
       this.$refs.menu.save(date);
     }
   },
   computed: {
-    requestErrors() {
-      const errors = [];
-      if (!this.$v.request.$dirty) return errors;
-      !this.$v.request.maxLength &&
-        errors.push("El numero de solicitud indicado es demasiado extenso.");
-      !this.$v.request.required && errors.push("Este campo es obligatorio.");
-      !this.$v.request.between &&
-        errors.push("El numero de solicitud es invalido.");
-      return errors;
-    },
     firstnameErrors() {
       const errors = [];
       if (!this.$v.firstname.$dirty) return errors;
@@ -347,7 +570,7 @@ export default {
     addressErrors() {
       const errors = [];
       if (!this.$v.direccion.$dirty) return errors;
-      !this.$v.direccion.maxLength && errors.push("La direccion es incorrecta");
+      !this.$v.direccion.minLength && errors.push("La direccion es incorrecta");
       !this.$v.direccion.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
@@ -359,12 +582,12 @@ export default {
       !this.$v.bornDate.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
-    curpErrors() {
+    homoclaveErrors() {
       const errors = [];
-      if (!this.$v.curp.$dirty) return errors;
-      !this.$v.curp.maxLength &&
+      if (!this.$v.homoclave.$dirty) return errors;
+      !this.$v.homoclave.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.curp.required && errors.push("Este campo es obligatorio.");
+      !this.$v.homoclave.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     ocrErrors() {
