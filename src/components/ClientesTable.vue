@@ -23,15 +23,18 @@
     >
       <template slot="items" slot-scope="props">
         <td class="text-xs-center">{{ props.item.nombre }}</td>
-        <td class="text-xs-center">{{ props.item.inicio }}</td>
-        <td class="text-xs-center">{{ props.item.prestamo }}</td>
-        <td class="text-xs-center">{{ props.item.adeudo }}</td>
-        <td class="text-xs-center">{{ props.item.pago }}</td>
-        <td class="text-xs-center">{{ props.item.comisionista.nombre }}</td>
-        <td class="text-xs-center">{{ props.item.dia }}</td>
-        <td class="text-xs-center">{{ props.item.estado }}</td>
+        <td class="text-xs-center">{{ props.item.bornDate }}</td>
+        <td class="text-xs-center">{{ props.item.sexo }}</td>
+        <td class="text-xs-center">{{ props.item.curp }}</td>
+        <td class="text-xs-center">{{ props.item.ocr }}</td>
+        <td class="text-xs-center">{{ props.item.direccion }}</td>
+        <td class="text-xs-center">{{ props.item.telefono }}</td>
+        <td class="text-xs-center">{{ props.item.entidad }}</td>
+        <td class="text-xs-center">{{ props.item.tipo }}</td>
         <td class="text-xs-center">
-          <v-text-field label="Cantidad" prefix="$"></v-text-field>
+          <v-btn flat icon small color="transparent">
+            <v-icon dark color="white">delete</v-icon>
+          </v-btn>
         </td>
       </template>
       <template v-slot:no-results>
@@ -42,9 +45,11 @@
 </template>
 
 <script>
+import config from "../config";
 export default {
   data() {
     return {
+      db: config.db,
       search: "",
       loading: false,
       headers: [
@@ -55,111 +60,57 @@ export default {
           value: "nombre"
         },
         {
-          text: "Inicio",
+          text: "F. de nac.",
           align: "center",
           sortable: true,
           value: "inicio"
         },
         {
-          text: "Prestamo",
+          text: "Sexo",
           align: "center",
           sortable: true,
           value: "prestamo"
         },
-        { text: "Adeudo", align: "center", sortable: true, value: "adeudo" },
+        { text: "Curp", align: "center", sortable: true, value: "adeudo" },
         {
-          text: "Pago semanal",
+          text: "OCR",
           align: "center",
           sortable: true,
           value: "pago"
         },
         {
-          text: "Comisionista",
+          text: "Dirección",
           align: "center",
           sortable: true,
           value: "comisionista"
         },
         {
-          text: "Dia de cobro",
+          text: "Teléfono",
           align: "center",
           sortable: true,
           value: "dia"
         },
-        { text: "Estado", align: "center", sortable: true, value: "estado" },
-        { text: "Pagar", align: "center", value: "pagar" }
+        { text: "Entidad", align: "center", sortable: true, value: "estado" },
+        { text: "Tipo", align: "center", value: "pagar" },
+        { text: "Opciones", align: "center", value: "opc" }
       ],
-      items: [
-        {
-          nombre: "Juan Lopez Perez",
-          inicio: "04/01/2019",
-          prestamo: 10000,
-          adeudo: 6200,
-          pago: 800,
-          comisionista: {
-            id: 1,
-            nombre: "Monserrath Castillo"
-          },
-          dia: "Lunes",
-          estado: "REGULAR"
-        },
-        {
-          nombre: "Juan Lopez Perez",
-          inicio: "04/01/2019",
-          prestamo: 10000,
-          adeudo: 6200,
-          pago: 800,
-          comisionista: {
-            id: 2,
-            nombre: "Mariela Rojas"
-          },
-          dia: "Martes",
-          estado: "REGULAR"
-        },
-        {
-          nombre: "Juan Lopez Perez",
-          inicio: "04/01/2019",
-          prestamo: 10000,
-          adeudo: 6200,
-          pago: 800,
-          comisionista: {
-            id: 3,
-            nombre: "Beatriz Vega"
-          },
-          dia: "Miercoles",
-          estado: "REGULAR"
-        }
-      ],
+      items: [],
       filteredItems: [],
-      comisionistas: [
-        {
-          id: 0,
-          nombre: "Todos"
-        },
-        {
-          id: 1,
-          nombre: "Monserrath Castillo"
-        },
-        {
-          id: 2,
-          nombre: "Mariela Rojas"
-        },
-        {
-          id: 3,
-          nombre: "Beatriz Vega"
-        }
-      ]
+      comisionistas: []
     };
   },
   mounted: function() {
-    this.cargarDatos();
+    // this.cargarDatos();
   },
   methods: {
-    cargarDatos() {
-      this.$http
-        .get("https://randomuser.me/api/?results=5000")
-        .then(respuesta => {
-          console.log(respuesta);
-        });
+    cargarPersonas(items) {
+      this.items = [];
+      for (let key in items) {
+        this.items.push(items[key]);
+      }
+      this.items.reverse();
+      this.filteredItems = this.items;
+      console.log(this.items);
     },
     filtrarPrestamos(comisionista) {
       this.filteredItems = this.items;
@@ -169,13 +120,21 @@ export default {
         });
         this.filteredItems = items;
       }
-    },
-    initialize() {
-      this.filteredItems = this.items;
     }
   },
   created() {
-    this.initialize();
+    //CARGAR PERSONAS
+    this.db
+      .ref("/personas")
+      .on("value", snapshot => this.cargarPersonas(snapshot.val()));
+    //CARGAR COMISIONISTAS
+    this.db.ref("/empleados").on("value", snapshot => {
+      this.comisionistas = [];
+      let items = snapshot.val();
+      for (let key in items) {
+        this.comisionistas.push(items[key]);
+      }
+    });
   }
 };
 </script>

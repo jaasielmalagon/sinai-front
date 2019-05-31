@@ -9,7 +9,17 @@
   <v-form>
     <v-container>
       <v-layout row wrap>
-        <v-flex xs12 md9>
+        <v-flex xs6>
+          <v-select
+            @change="comisionista = $event.id"
+            :items="comisionistas"
+            item-text="nombre"
+            :return-object="true"
+            label="Comisionistas"
+            no-data-text="No hay comisionistas"
+          ></v-select>
+        </v-flex>
+        <v-flex xs6>
           <v-menu
             ref="menu"
             v-model="menu"
@@ -195,6 +205,7 @@ export default {
       direccion: "",
       telefono: "",
       entidad: "",
+      comisionista: "",
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -248,7 +259,9 @@ export default {
         ocr: "",
         direccion: "",
         telefono: "",
-        entidad: ""
+        entidad: "",
+        tipo: 1,
+        comisionista: ""
       },
       defaultCliente: {
         firstname: "",
@@ -260,12 +273,23 @@ export default {
         ocr: "",
         direccion: "",
         telefono: "",
-        entidad: ""
-      }
+        entidad: "",
+        tipo: 1,
+        comisionista: ""
+      },
+      comisionistas: []
     };
   },
-  watch() {
-    // generateCurp() {
+  watch: {
+    menu(val) {
+      val &&
+        setTimeout(() => {
+          return (this.$refs.picker.activePicker = "YEAR");
+        });
+    }
+  },
+  methods: {
+    generateCurp() {
       console.log("curp...");
       if (
         this.curp == "" &&
@@ -275,7 +299,8 @@ export default {
           this.bornDate != "" &&
           this.entidad != "" &&
           this.sexo != "" &&
-          this.homoclave != "")
+          this.homoclave != "",
+          this.comisionista != 0)
       ) {
         this.firstname.toUpperCase();
         this.apaterno.toUpperCase();
@@ -309,17 +334,7 @@ export default {
           consonantesAmaterno[0] == "Ñ" ? "X" : consonantesAmaterno[0];
         this.curp += consonantesNombre[0] == "Ñ" ? "X" : consonantesNombre[0];
       }
-    // }
-  },
-  watch: {
-    menu(val) {
-      val &&
-        setTimeout(() => {
-          return (this.$refs.picker.activePicker = "YEAR");
-        });
-    }
-  },
-  methods: {
+    },
     consonantesNombre() {
       let consonantesNombre = [];
       for (let i = 1; i < nombreFiltrado.length; i++) {
@@ -498,6 +513,7 @@ export default {
       this.nuevoCliente.direccion = this.direccion;
       this.nuevoCliente.telefono = this.telefono;
       this.nuevoCliente.entidad = this.entidad;
+      this.nuevoCliente.comisionista = this.comisionista;
       this.nuevoCliente.curp =
         this.curp.normalize("NFD").replace(/[\u0300-\u036f]/g, "") +
         "" +
@@ -606,6 +622,16 @@ export default {
       !this.$v.telefono.required && errors.push("Este campo es obligatorio.");
       return errors;
     }
+  },
+  created() {
+    //CARGAR COMISIONISTAS
+    this.db.ref("/empleados").on("value", snapshot => {
+      this.comisionistas = [];
+      let items = snapshot.val();
+      for (let key in items) {
+        this.comisionistas.push(items[key]);
+      }
+    });
   }
 };
 </script>
