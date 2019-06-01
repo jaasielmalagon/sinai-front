@@ -53,13 +53,14 @@
         </v-flex>
         <v-flex xs12 md4>
           <v-text-field
-            v-model="firstname"
-            :error-messages="firstnameErrors"
+            v-model="nombre"
+            :error-messages="nombreErrors"
             :counter="30"
             label="Nombre"
             required
-            @input="$v.firstname.$touch()"
-            @blur="$v.firstname.$touch()"
+            @input="$v.nombre.$touch()"
+            @blur="$v.nombre.$touch()"
+            @keyup="uppercasedName"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
@@ -71,6 +72,7 @@
             required
             @input="$v.apaterno.$touch()"
             @blur="$v.apaterno.$touch()"
+            @keyup="uppercasedLastname"
           ></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
@@ -82,6 +84,7 @@
             required
             @input="$v.amaterno.$touch()"
             @blur="$v.amaterno.$touch()"
+            @keyup="uppercasedLastname"
           ></v-text-field>
         </v-flex>
         <v-flex xs5>
@@ -156,6 +159,7 @@
             required
             @input="$v.direccion.$touch()"
             @blur="$v.direccion.$touch()"
+            @keyup="uppercasedAddress"
           ></v-text-field>
         </v-flex>
       </v-layout>
@@ -180,7 +184,7 @@ export default {
   mixins: [validationMixin],
   validations: {
     bornDate: { required, maxLength: maxLength(10) },
-    firstname: { required, maxLength: maxLength(30) },
+    nombre: { required, maxLength: maxLength(30) },
     apaterno: { required, maxLength: maxLength(20) },
     amaterno: { required, maxLength: maxLength(20) },
     direccion: { required, minLength: minLength(10) },
@@ -194,7 +198,7 @@ export default {
   data() {
     return {
       db: config.db,
-      firstname: "",
+      nombre: "",
       apaterno: "",
       amaterno: "",
       bornDate: "",
@@ -250,7 +254,7 @@ export default {
       ],
       switch1: false,
       nuevoCliente: {
-        firstname: "",
+        nombre: "",
         apaterno: "",
         amaterno: "",
         bornDate: "",
@@ -264,7 +268,7 @@ export default {
         comisionista: ""
       },
       defaultCliente: {
-        firstname: "",
+        nombre: "",
         apaterno: "",
         amaterno: "",
         bornDate: "",
@@ -286,17 +290,13 @@ export default {
         setTimeout(() => {
           return (this.$refs.picker.activePicker = "YEAR");
         });
-    },
-    curp() {
-      this.generateCurp();
     }
   },
   methods: {
     generateCurp() {
-      console.log("curp...");
       if (
         this.curp == "" &&
-        (this.firstname != "" &&
+        (this.nombre != "" &&
           this.apaterno != "" &&
           this.amaterno != "" &&
           this.bornDate != "" &&
@@ -305,10 +305,8 @@ export default {
           this.homoclave != "",
         this.comisionista != 0)
       ) {
-        console.log("generando curp...");
-        this.firstname.toUpperCase();
-        this.apaterno.toUpperCase();
-        this.amaterno == undefined ? "XXXXX" : this.amaterno.toUpperCase();
+        this.amaterno =
+          this.amaterno == undefined ? "XXXXX" : this.amaterno;
         let apaternoFiltrado = this.filtrarApaterno();
         let amaternoFiltrado = this.filtrarAmaterno();
 
@@ -324,7 +322,7 @@ export default {
             ? "X"
             : amaternoFiltrado.substring(0, 1);
 
-        this.curp = c1 + c2 + c3;        
+        this.curp = c1 + c2 + c3;
         let nombreFiltrado = this.filtrarNombre();
         this.setDateCurp();
         this.curp += this.sexo + this.entidad;
@@ -348,7 +346,12 @@ export default {
           nombreFiltrado.charAt(i) != "E" &&
           nombreFiltrado.charAt(i) != "I" &&
           nombreFiltrado.charAt(i) != "O" &&
-          nombreFiltrado.charAt(i) != "U"
+          nombreFiltrado.charAt(i) != "U" &&
+          nombreFiltrado.charAt(i) != "a" &&
+          nombreFiltrado.charAt(i) != "e" &&
+          nombreFiltrado.charAt(i) != "i" &&
+          nombreFiltrado.charAt(i) != "o" &&
+          nombreFiltrado.charAt(i) != "u"
         ) {
           consonantesNombre.push(nombreFiltrado.charAt(i));
         }
@@ -364,7 +367,12 @@ export default {
           amaternoFiltrado.charAt(i) != "E" &&
           amaternoFiltrado.charAt(i) != "I" &&
           amaternoFiltrado.charAt(i) != "O" &&
-          amaternoFiltrado.charAt(i) != "U"
+          amaternoFiltrado.charAt(i) != "U" &&
+          amaternoFiltrado.charAt(i) != "a" &&
+          amaternoFiltrado.charAt(i) != "e" &&
+          amaternoFiltrado.charAt(i) != "i" &&
+          amaternoFiltrado.charAt(i) != "o" &&
+          amaternoFiltrado.charAt(i) != "u"
         ) {
           consonantesAmaterno.push(amaternoFiltrado.charAt(i));
         }
@@ -374,13 +382,18 @@ export default {
     consonantesApaterno(apaternoFiltrado) {
       let consonantesApaterno = [];
       for (let i = 1; i < apaternoFiltrado.length; i++) {
-        //recopilar todas las consonantes del apellido paterno a partir del segundo caracter (omitimos el primero) en un arreglo
+        //recopilar todas las consonantes del apellido paterno a partir del segundo caracter en un arreglo (omitimos el primero)
         if (
           apaternoFiltrado.charAt(i) != "A" &&
           apaternoFiltrado.charAt(i) != "E" &&
           apaternoFiltrado.charAt(i) != "I" &&
           apaternoFiltrado.charAt(i) != "O" &&
-          apaternoFiltrado.charAt(i) != "U"
+          apaternoFiltrado.charAt(i) != "U" &&
+          apaternoFiltrado.charAt(i) != "a" &&
+          apaternoFiltrado.charAt(i) != "e" &&
+          apaternoFiltrado.charAt(i) != "i" &&
+          apaternoFiltrado.charAt(i) != "o" &&
+          apaternoFiltrado.charAt(i) != "u"
         ) {
           consonantesApaterno.push(apaternoFiltrado.charAt(i));
         }
@@ -390,13 +403,11 @@ export default {
     setDateCurp() {
       let year = this.bornDate.substring(2, 4);
       let month = this.bornDate.substring(6, 7);
-      let day = this.bornDate.substring(9, 10);
+      let day = this.bornDate.substring(8, 10);
       month < 10
         ? (this.curp += year + "0" + month)
         : (this.curp += year + month);
-      day < 10
-        ? (this.curp += "0" + this.bornDate.day)
-        : (this.curp += this.bornDate.day);
+      day < 10 ? (this.curp += "0" + day) : (this.curp += day);
     },
     getSecondChar(apaternoFiltrado) {
       for (let i = 1; i < apaternoFiltrado.length; i++) {
@@ -405,7 +416,12 @@ export default {
           apaternoFiltrado.charAt(i) == "E" ||
           apaternoFiltrado.charAt(i) == "I" ||
           apaternoFiltrado.charAt(i) == "O" ||
-          apaternoFiltrado.charAt(i) == "U"
+          apaternoFiltrado.charAt(i) == "U" ||
+          apaternoFiltrado.charAt(i) == "a" ||
+          apaternoFiltrado.charAt(i) == "e" ||
+          apaternoFiltrado.charAt(i) == "i" ||
+          apaternoFiltrado.charAt(i) == "o" ||
+          apaternoFiltrado.charAt(i) == "u"
         ) {
           return apaternoFiltrado.charAt(i);
         }
@@ -413,7 +429,7 @@ export default {
       return "X";
     },
     filtrarNombre() {
-      let partirNombre = this.firstname.split(" ");
+      let partirNombre = this.nombre.split(" ");
       if (partirNombre.length >= 2) {
         if (
           partirNombre[0] == "JOSE" ||
@@ -434,13 +450,17 @@ export default {
           return partirNombre[1];
         } else {
           this.curp +=
-            this.firstname.substring(0, 1) == "Ñ" ? "X" : this.firstname.substring(0, 1);
+            this.nombre.substring(0, 1) == "Ñ"
+              ? "X"
+              : this.nombre.substring(0, 1);
           return partirNombre[0];
         }
       } else {
         this.curp +=
-          this.firstname.substring(0, 1) == "Ñ" ? "X" : this.firstname.substring(0, 1);
-        return this.firstname;
+          this.nombre.substring(0, 1) == "Ñ"
+            ? "X"
+            : this.nombre.substring(0, 1);
+        return this.nombre;
       }
     },
     filtrarAmaterno() {
@@ -509,22 +529,19 @@ export default {
     },
     writeClientData() {
       this.generateCurp();
-      this.nuevoCliente.nombre = this.firstname.toUpperCase();
+      this.nuevoCliente.nombre = this.nombre;
       this.nuevoCliente.apaterno = this.apaterno;
-      this.nuevoCliente.amaterno = this.amaterno.toUpperCase();
-      this.nuevoCliente.bornDate = this.bornDate.toUpperCase();
-      this.nuevoCliente.sexo = this.sexo.toUpperCase();
-      this.nuevoCliente.ocr = this.ocr.toUpperCase();
+      this.nuevoCliente.amaterno = this.amaterno;
+      this.nuevoCliente.bornDate = this.bornDate;
+      this.nuevoCliente.sexo = this.sexo;
+      this.nuevoCliente.ocr = this.ocr;
       this.nuevoCliente.direccion = this.direccion.toUpperCase();
-      this.nuevoCliente.telefono = this.telefono.toUpperCase();
-      this.nuevoCliente.entidad = this.entidad.toUpperCase();
+      this.nuevoCliente.telefono = this.telefono;
+      this.nuevoCliente.entidad = this.entidad;
       this.nuevoCliente.comisionista = this.comisionista;
-      this.nuevoCliente.curp = (
-        this.curp.normalize("NFD").replace(/[\u0300-\u036f]/g, "") +
-        "" +
-        this.homoclave
-      ).toUpperCase();
-      if (this.curp.length === 18) {
+      this.nuevoCliente.curp =
+        this.curp.normalize("NFD").replace(/[\u0300-\u036f]/g, "") + this.homoclave;
+      if (this.curp.length == 16) {
         this.db
           .ref("personas/")
           .push(this.nuevoCliente)
@@ -532,13 +549,13 @@ export default {
             this.clear();
             console.log(response);
           });
-      }else{
-        alert('LA CURP NO SE GENERÓ')
+      } else {
+        alert("LA CURP NO SE GENERÓ");
       }
     },
     clear() {
       this.nuevoCliente = this.defaultCliente;
-      this.firstname = "";
+      this.nombre = "";
       this.apaterno = "";
       this.amaterno = "";
       this.bornDate = "";
@@ -554,15 +571,25 @@ export default {
     },
     saveDate(date) {
       this.$refs.menu.save(date);
+    },
+    uppercasedName(){
+      this.nombre = this.nombre.toUpperCase();
+    },
+    uppercasedLastname(){
+      this.apaterno = this.apaterno.toUpperCase();
+      this.amaterno = this.amaterno.toUpperCase();
+    },
+    uppercasedAddress(){
+      this.direccion = this.direccion.toUpperCase();
     }
   },
   computed: {
-    firstnameErrors() {
+    nombreErrors() {
       const errors = [];
-      if (!this.$v.firstname.$dirty) return errors;
-      !this.$v.firstname.maxLength &&
+      if (!this.$v.nombre.$dirty) return errors;
+      !this.$v.nombre.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.firstname.required && errors.push("Este campo es obligatorio.");
+      !this.$v.nombre.required && errors.push("Este campo es obligatorio.");
       return errors;
     },
     amaternoErrors() {
