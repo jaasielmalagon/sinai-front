@@ -22,7 +22,7 @@
       class="elevation-1"
     >
       <template slot="items" slot-scope="props">
-        <td class="text-xs-center">{{ props.item.nombre }}</td>
+        <td class="text-xs-center">{{ props.item.nombre }} {{ props.item.apaterno }} {{ props.item.amaterno }}</td>
         <td class="text-xs-center">{{ props.item.bornDate }}</td>
         <td class="text-xs-center">{{ props.item.sexo }}</td>
         <td class="text-xs-center">{{ props.item.curp }}</td>
@@ -110,7 +110,7 @@ export default {
       }
       this.items.reverse();
       this.filteredItems = this.items;
-      console.log(this.items);
+      // console.log(this.items);
     },
     filtrarPrestamos(comisionista) {
       this.filteredItems = this.items;

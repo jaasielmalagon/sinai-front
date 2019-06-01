@@ -15,7 +15,7 @@
             :items="comisionistas"
             item-text="nombre"
             :return-object="true"
-            label="Comisionistas"
+            label="Comisionista"
             no-data-text="No hay comisionistas"
           ></v-select>
         </v-flex>
@@ -286,6 +286,9 @@ export default {
         setTimeout(() => {
           return (this.$refs.picker.activePicker = "YEAR");
         });
+    },
+    curp() {
+      this.generateCurp();
     }
   },
   methods: {
@@ -300,12 +303,12 @@ export default {
           this.entidad != "" &&
           this.sexo != "" &&
           this.homoclave != "",
-          this.comisionista != 0)
+        this.comisionista != 0)
       ) {
+        console.log("generando curp...");
         this.firstname.toUpperCase();
         this.apaterno.toUpperCase();
         this.amaterno == undefined ? "XXXXX" : this.amaterno.toUpperCase();
-        this.bornDate;
         let apaternoFiltrado = this.filtrarApaterno();
         let amaternoFiltrado = this.filtrarAmaterno();
 
@@ -315,18 +318,19 @@ export default {
             : apaternoFiltrado.substring(0, 1);
 
         let c2 = this.getSecondChar(apaternoFiltrado);
+
         let c3 =
           amaternoFiltrado.substring(0, 1) == "Ñ"
             ? "X"
             : amaternoFiltrado.substring(0, 1);
-        this.curp = c1 + c2 + c3;
-        let partirNombre = nombre.split(" ");
+
+        this.curp = c1 + c2 + c3;        
         let nombreFiltrado = this.filtrarNombre();
         this.setDateCurp();
-        this.curp += this.sexo + this.estado;
-        let consonantesApaterno = this.consonantesApaterno();
-        let consonantesAmaterno = this.consonantesAmaterno();
-        let consonantesNombre = this.consonantesNombre();
+        this.curp += this.sexo + this.entidad;
+        let consonantesApaterno = this.consonantesApaterno(apaternoFiltrado);
+        let consonantesAmaterno = this.consonantesAmaterno(amaternoFiltrado);
+        let consonantesNombre = this.consonantesNombre(nombreFiltrado);
 
         this.curp +=
           consonantesApaterno[0] == "Ñ" ? "X" : consonantesApaterno[0];
@@ -335,7 +339,7 @@ export default {
         this.curp += consonantesNombre[0] == "Ñ" ? "X" : consonantesNombre[0];
       }
     },
-    consonantesNombre() {
+    consonantesNombre(nombreFiltrado) {
       let consonantesNombre = [];
       for (let i = 1; i < nombreFiltrado.length; i++) {
         //recopilar todas las consonantes del nombre a partir del segundo caracter (omitimos el primero) en un arreglo
@@ -351,7 +355,7 @@ export default {
       }
       return consonantesNombre;
     },
-    consonantesAmaterno() {
+    consonantesAmaterno(amaternoFiltrado) {
       let consonantesAmaterno = [];
       for (let i = 1; i < amaternoFiltrado.length; i++) {
         //recopilar todas las consonantes del apellido materno a partir del segundo caracter (omitimos el primero) en un arreglo
@@ -367,7 +371,7 @@ export default {
       }
       return consonantesAmaterno;
     },
-    consonantesApaterno() {
+    consonantesApaterno(apaternoFiltrado) {
       let consonantesApaterno = [];
       for (let i = 1; i < apaternoFiltrado.length; i++) {
         //recopilar todas las consonantes del apellido paterno a partir del segundo caracter (omitimos el primero) en un arreglo
@@ -409,6 +413,7 @@ export default {
       return "X";
     },
     filtrarNombre() {
+      let partirNombre = this.firstname.split(" ");
       if (partirNombre.length >= 2) {
         if (
           partirNombre[0] == "JOSE" ||
@@ -429,13 +434,13 @@ export default {
           return partirNombre[1];
         } else {
           this.curp +=
-            nombre.substring(0, 1) == "Ñ" ? "X" : nombre.substring(0, 1);
+            this.firstname.substring(0, 1) == "Ñ" ? "X" : this.firstname.substring(0, 1);
           return partirNombre[0];
         }
       } else {
         this.curp +=
-          nombre.substring(0, 1) == "Ñ" ? "X" : nombre.substring(0, 1);
-        return nombre;
+          this.firstname.substring(0, 1) == "Ñ" ? "X" : this.firstname.substring(0, 1);
+        return this.firstname;
       }
     },
     filtrarAmaterno() {
@@ -467,7 +472,7 @@ export default {
           }
         }
       } else {
-        return amaterno;
+        return partirAmaterno[0];
       }
     },
     filtrarApaterno() {
@@ -499,32 +504,37 @@ export default {
           }
         }
       } else {
-        return apaterno;
+        return partirApaterno[0];
       }
     },
     writeClientData() {
+      this.generateCurp();
       this.nuevoCliente.nombre = this.firstname.toUpperCase();
-      this.nuevoCliente.amaterno = this.amaterno;
-      this.nuevoCliente.amaterno = this.amaterno;
       this.nuevoCliente.apaterno = this.apaterno;
-      this.nuevoCliente.bornDate = this.bornDate;
-      this.nuevoCliente.sexo = this.sexo;
-      this.nuevoCliente.ocr = this.ocr;
-      this.nuevoCliente.direccion = this.direccion;
-      this.nuevoCliente.telefono = this.telefono;
-      this.nuevoCliente.entidad = this.entidad;
+      this.nuevoCliente.amaterno = this.amaterno.toUpperCase();
+      this.nuevoCliente.bornDate = this.bornDate.toUpperCase();
+      this.nuevoCliente.sexo = this.sexo.toUpperCase();
+      this.nuevoCliente.ocr = this.ocr.toUpperCase();
+      this.nuevoCliente.direccion = this.direccion.toUpperCase();
+      this.nuevoCliente.telefono = this.telefono.toUpperCase();
+      this.nuevoCliente.entidad = this.entidad.toUpperCase();
       this.nuevoCliente.comisionista = this.comisionista;
-      this.nuevoCliente.curp =
+      this.nuevoCliente.curp = (
         this.curp.normalize("NFD").replace(/[\u0300-\u036f]/g, "") +
         "" +
-        this.homoclave;
-      this.db
-        .ref("personas/")
-        .push(this.nuevoCliente)
-        .then(response => {
-          this.clear();
-          console.log(response);
-        });
+        this.homoclave
+      ).toUpperCase();
+      if (this.curp.length === 18) {
+        this.db
+          .ref("personas/")
+          .push(this.nuevoCliente)
+          .then(response => {
+            this.clear();
+            console.log(response);
+          });
+      }else{
+        alert('LA CURP NO SE GENERÓ')
+      }
     },
     clear() {
       this.nuevoCliente = this.defaultCliente;
