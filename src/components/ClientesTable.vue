@@ -22,7 +22,7 @@
       class="elevation-1"
     >
       <template slot="items" slot-scope="props">
-        <td class="text-xs-center">{{ props.item.key }}</td>
+        <!-- <td class="text-xs-center">{{ props.item.key }}</td> -->
         <td
           class="text-xs-center"
         >{{ props.item.nombre }} {{ props.item.apaterno }} {{ props.item.amaterno }}</td>
@@ -30,25 +30,15 @@
         <td class="text-xs-center">{{ props.item.ocr }}</td>
         <td class="text-xs-center">{{ props.item.direccion }}</td>
         <td class="text-xs-center">{{ props.item.telefono }}</td>
-        <td class="text-xs-center">{{ props.item.entidad }}</td>
-        <td class="text-xs-center">{{ props.item.tipo }}</td>
+        <!-- <td class="text-xs-center">{{ props.item.entidad }}</td> -->
+        <!-- <td class="text-xs-center">{{ props.item.tipo }}</td> -->
         <td class="text-xs-center">
-          <v-dialog v-model="dialog" persistent max-width="290">
-            <template v-slot:activator="{ on }">
-              <v-btn v-on="on" flat icon small color="transparent">
-                <v-icon dark color="white">delete</v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title class="headline">Realmente desea eliminar este cliente?</v-card-title>
-              <v-card-text>Si lo elimina, la informacion no podra ser recuperada.</v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="green darken-1" flat @click="dialog = false">No, cancelar</v-btn>
-                <v-btn color="green darken-1" flat @click="deleteItem(props.item.key)">Si, eliminar</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <v-btn @click="$emit('editClient', props.item)" icon small color="transparent">
+            <v-icon dark color="white">edit</v-icon>
+          </v-btn>
+          <v-btn @click="deleteItem(props.item)" icon small color="transparent">
+            <v-icon dark color="white">delete</v-icon>
+          </v-btn>
         </td>
       </template>
       <template v-slot:no-results>
@@ -56,12 +46,17 @@
       </template>
     </v-data-table>
 
-    <v-dialog v-model="loadingDialog" hide-overlay persistent width="300">
-      <v-card color="primary" dark>
-        <v-card-text>
-          Eliminando, por favor espere...
-          <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
-        </v-card-text>
+    <loading-dialog :activator="loadingDialog"></loading-dialog>
+
+    <v-dialog v-model="deleteDialog" persistent max-width="290">
+      <v-card>
+        <v-card-title class="headline">¿Realmente desea eliminar el elemento seleccionado?</v-card-title>
+        <v-card-text>Si lo elimina, la información no podrá ser recuperada.</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" flat @click="deleteDialog = false">No, cancelar</v-btn>
+          <v-btn color="green darken-1" flat @click="confirmDeletion()">Si, eliminar</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-card>
@@ -69,16 +64,33 @@
 
 <script>
 import config from "../config";
+import LoadingDialog from "./loadingDialog";
 export default {
+  components: { LoadingDialog },
   data() {
     return {
       db: config.db,
       search: "",
       loading: false,
-      dialog: false,
+      deleteDialog: false,
       loadingDialog: false,
+      selectedItem: {
+        key: "",
+        nombre: "",
+        apaterno: "",
+        amaterno: "",
+        bornDate: "",
+        sexo: "",
+        curp: "",
+        ocr: "",
+        direccion: "",
+        telefono: "",
+        entidad: "",
+        tipo: 1,
+        comisionista: ""
+      },
       headers: [
-        { text: "Key", align: "center", sortable: true, value: "key" },
+        // { text: "Key", align: "center", sortable: true, value: "key" },
         {
           text: "Cliente",
           align: "center",
@@ -104,8 +116,8 @@ export default {
           sortable: true,
           value: "dia"
         },
-        { text: "Entidad", align: "center", sortable: true, value: "estado" },
-        { text: "Tipo", align: "center", value: "pagar" },
+        // { text: "Entidad", align: "center", sortable: true, value: "estado" },
+        // { text: "Tipo", align: "center", value: "pagar" },
         { text: "Opciones", align: "center", value: "opc" }
       ],
       items: [],
@@ -116,14 +128,20 @@ export default {
   mounted: function() {
     // this.cargarDatos();
   },
-  methods: {
-    deleteItem(key) {
+  methods: {    
+    deleteItem(item) {
+      // this.editedIndex = this.teams.indexOf(item);
+      this.selectedItem = item;
+      this.deleteDialog = true;
+    },
+    confirmDeletion() {
+      this.deleteDialog = false;
       this.loadingDialog = true;
       this.db
-        .ref("/personas/" + key)
+        .ref("/personas/" + this.selectedItem.key)
         .set(null)
-        .then(response => {
-          this.loadingDialog = true;
+        .then(() => {
+          this.loadingDialog = false;
         });
     },
     cargarPersonas(items) {
@@ -160,11 +178,15 @@ export default {
   },
   created() {
     //CARGAR PERSONAS
-    this.db.ref("/personas").on("value", snapshot => {
-      this.loading = true;
-      this.cargarPersonas(snapshot.val());
-      this.loading = false;
-    });
+    this.db
+      .ref("/personas")
+      .orderByChild('tipo')
+      .equalTo(1)
+      .on("value", snapshot => {
+        this.loading = true;
+        this.cargarPersonas(snapshot.val());
+        this.loading = false;
+      });
     //CARGAR COMISIONISTAS
     this.db.ref("/empleados").on("value", snapshot => {
       this.comisionistas = [];

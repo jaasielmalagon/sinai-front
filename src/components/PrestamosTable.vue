@@ -154,13 +154,6 @@ export default {
     // this.cargarDatos();
   },
   methods: {    
-    cargarDatos() {
-      this.$http
-        .get("https://randomuser.me/api/?results=50")
-        .then(respuesta => {
-          console.log(respuesta);
-        });
-    },
     filtrarPrestamos(comisionista) {
       this.filteredItems = this.items;
       if (comisionista.id !== 0) {

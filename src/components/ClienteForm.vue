@@ -6,210 +6,210 @@
       </v-toolbar>
     </v-card-title>
   <v-card-text class="px-5">-->
-  <v-form>
-    <v-container>
-      <v-layout row wrap>
-        <v-flex xs6>
-          <v-select
-            @change="comisionista = $event.id"
-            :items="comisionistas"
-            item-text="nombre"
-            :return-object="true"
-            label="Comisionista"
-            no-data-text="No hay comisionistas"
-          ></v-select>
-        </v-flex>
-        <v-flex xs6>
-          <v-menu
-            ref="menu"
-            v-model="menu"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            lazy
-            transition="scale-transition"
-            offset-y
-            full-width
-            min-width="100px"
-          >
-            <template v-slot:activator="{ on }">
-              <v-text-field
-                v-model="bornDate"
-                label="Fecha de nacimiento"
-                :error-messages="bornDateErrors"
-                readonly
-                v-on="on"
-                @input="$v.bornDate.$touch()"
-                @blur="$v.bornDate.$touch()"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              v-model="bornDate"
-              ref="picker"
-              :max="maxDate"
-              min="1950-01-01"
-              @change="saveDate"
-            ></v-date-picker>
-          </v-menu>
-        </v-flex>
-        <v-flex xs12 md4>
-          <v-text-field
-            v-model="nombre"
-            :error-messages="nombreErrors"
-            :counter="30"
-            label="Nombre"
-            required
-            @input="$v.nombre.$touch()"
-            @blur="$v.nombre.$touch()"
-            @keyup="uppercasedName"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs12 md4>
-          <v-text-field
-            v-model="apaterno"
-            :error-messages="apaternoErrors"
-            :counter="20"
-            label="Apellido paterno"
-            required
-            @input="$v.apaterno.$touch()"
-            @blur="$v.apaterno.$touch()"
-            @keyup="uppercasedLastname"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs12 md4>
-          <v-text-field
-            v-model="amaterno"
-            :error-messages="amaternoErrors"
-            :counter="20"
-            label="Apellido materno"
-            required
-            @input="$v.amaterno.$touch()"
-            @blur="$v.amaterno.$touch()"
-            @keyup="uppercasedLastname"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs5>
-          <v-text-field v-model="curp" label="CURP" readonly></v-text-field>
-        </v-flex>
-        <v-flex xs3>
-          <v-text-field
-            v-model="homoclave"
-            :error-messages="homoclaveErrors"
-            :counter="2"
-            label="Homoclave"
-            required
-            @input="$v.homoclave.$touch()"
-            @blur="$v.homoclave.$touch()"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs4>
-          <v-text-field
-            v-model="ocr"
-            :error-messages="ocrErrors"
-            :counter="13"
-            label="Clave de elector"
-            required
-            @input="$v.ocr.$touch()"
-            @blur="$v.ocr.$touch()"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs7 md4>
-          <v-radio-group row v-model="sexo" :error-messages="sexoErrors">
-            <div>Sexo:</div>
-            <v-radio label="Hombre" value="H"></v-radio>
-            <v-radio label="Mujer" value="M"></v-radio>
-          </v-radio-group>
-        </v-flex>
-        <v-flex xs5 md4>
-          <v-switch
-            @change="$emit('esCasado', switch1)"
-            v-model="switch1"
-            color="success"
-            label="El solicitante es casado."
-          ></v-switch>
-        </v-flex>
-        <v-flex xs7>
-          <v-select
-            v-model="entidad"
-            :items="items"
-            item-text="label"
-            item-value="value"
-            :error-messages="entidadErrors"
-            label="Entidad de nacimiento"
-            required
-            @change="$v.entidad.$touch()"
-            @blur="$v.entidad.$touch()"
-          ></v-select>
-        </v-flex>
-        <v-flex xs5>
-          <v-text-field
-            v-model="telefono"
-            :error-messages="phoneErrors"
-            :counter="10"
-            label="Telefono celular"
-            required
-            @input="$v.telefono.$touch()"
-            @blur="$v.telefono.$touch()"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs12>
-          <v-text-field
-            v-model="direccion"
-            :error-messages="addressErrors"
-            label="Direccion particular"
-            required
-            @input="$v.direccion.$touch()"
-            @blur="$v.direccion.$touch()"
-            @keyup="uppercasedAddress"
-          ></v-text-field>
-        </v-flex>
-      </v-layout>
-    </v-container>
-    <v-btn color="green lighten-1" @click="writeClientData">Aceptar</v-btn>
-    <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
-  </v-form>
+  <div>
+    <v-form>
+      <v-container>
+        <h1>Nombre: {{cliente.nombre}}</h1>
+        <v-layout row wrap>
+          <v-flex xs6>
+            <v-select
+              v-model="cliente.comisionista"
+              @change="comisionista = $event.id"
+              :items="comisionistas"
+              item-text="nombre"
+              :return-object="true"
+              label="Comisionista"
+              no-data-text="No hay comisionistas"
+            ></v-select>
+          </v-flex>
+          <v-flex xs6>
+            <v-menu
+              ref="menu"
+              v-model="menu"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+              full-width
+              min-width="100px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="cliente.bornDate"                  
+                  label="Fecha de nacimiento"
+                  :error-messages="bornDateErrors"
+                  readonly
+                  v-on="on"
+                  @input="$v.cliente.bornDate.$touch()"
+                  @blur="$v.cliente.bornDate.$touch()"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="cliente.bornDate"
+                ref="picker"
+                :max="maxDate"
+                min="1950-01-01"
+                @change="saveDate"
+              ></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex xs12 md4>
+            <v-text-field
+              v-model="cliente.nombre"
+              :error-messages="nombreErrors"
+              :counter="30"
+              label="Nombre"
+              required
+              @input="$v.cliente.nombre.$touch()"
+              @blur="$v.cliente.nombre.$touch()"
+              @keyup="uppercasedName"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs12 md4>
+            <v-text-field
+              v-model="cliente.apaterno"
+              :error-messages="apaternoErrors"
+              :counter="20"
+              label="Apellido paterno"
+              required
+              @input="$v.cliente.apaterno.$touch()"
+              @blur="$v.cliente.apaterno.$touch()"
+              @keyup="uppercasedLastname"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs12 md4>
+            <v-text-field
+              v-model="cliente.amaterno"
+              :error-messages="amaternoErrors"
+              :counter="20"
+              label="Apellido materno"
+              required
+              @input="$v.cliente.amaterno.$touch()"
+              @blur="$v.cliente.amaterno.$touch()"
+              @keyup="uppercasedLastname"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs5>
+            <v-text-field v-model="cliente.curp" label="CURP" readonly></v-text-field>
+          </v-flex>
+          <v-flex xs3>
+            <v-text-field
+              v-model="homoclave"
+              :error-messages="homoclaveErrors"
+              :counter="2"
+              label="Homoclave"
+              required
+              @input="$v.homoclave.$touch()"
+              @blur="$v.homoclave.$touch()"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs4>
+            <v-text-field
+              v-model="cliente.ocr"
+              :error-messages="ocrErrors"
+              :counter="13"
+              label="Clave de elector"
+              required
+              @input="$v.cliente.ocr.$touch()"
+              @blur="$v.cliente.ocr.$touch()"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs7 md4>
+            <v-radio-group row v-model="cliente.sexo" :error-messages="sexoErrors">
+              <div>Sexo:</div>
+              <v-radio label="Hombre" value="H"></v-radio>
+              <v-radio label="Mujer" value="M"></v-radio>
+            </v-radio-group>
+          </v-flex>
+          <v-flex xs5 md4 v-if="!esReferencia">
+            <v-switch
+              @change="$emit('esCasado', switch1)"
+              v-model="switch1"
+              color="success"
+              label="El solicitante es casado."
+            ></v-switch>
+          </v-flex>
+          <v-flex xs7>
+            <v-select
+              v-model="cliente.entidad"
+              :items="items"
+              item-text="label"
+              item-value="value"
+              :error-messages="entidadErrors"
+              label="Entidad de nacimiento"
+              required
+              @change="$v.cliente.entidad.$touch()"
+              @blur="$v.cliente.entidad.$touch()"
+            ></v-select>
+          </v-flex>
+          <v-flex xs5>
+            <v-text-field
+              v-model="cliente.telefono"
+              :error-messages="phoneErrors"
+              :counter="10"
+              label="Telefono celular"
+              required
+              @input="$v.cliente.telefono.$touch()"
+              @blur="$v.cliente.telefono.$touch()"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs12>
+            <v-text-field
+              v-model="cliente.direccion"
+              :error-messages="addressErrors"
+              label="Direccion particular"
+              required
+              @input="$v.cliente.direccion.$touch()"
+              @blur="$v.cliente.direccion.$touch()"
+              @keyup="uppercasedAddress"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <v-btn color="green lighten-1" @click="writeClientData">Aceptar</v-btn>
+      <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
+    </v-form>
+    <loading-dialog :activator="loadingDialog"></loading-dialog>
+  </div>
 </template>
 
 <script>
+/* eslint-disable */
 import { validationMixin } from "vuelidate";
-import {
-  required,
-  maxLength,
-  minLength,
-  between
-} from "vuelidate/lib/validators";
+import { required, maxLength, minLength } from "vuelidate/lib/validators";
 import config from "../config";
+import LoadingDialog from "./loadingDialog";
 
 export default {
-  name: "NuevoCliente",
+  name: "ClienteForm",
+  props: {
+    cliente: {
+      type: Object,
+      required: true
+    },
+    esReferencia: Boolean
+  },
+  components: { LoadingDialog },
   mixins: [validationMixin],
   validations: {
-    bornDate: { required, maxLength: maxLength(10) },
-    nombre: { required, maxLength: maxLength(30) },
-    apaterno: { required, maxLength: maxLength(20) },
-    amaterno: { required, maxLength: maxLength(20) },
-    direccion: { required, minLength: minLength(10) },
-    entidad: { required },
-    sexo: { required },
-    edocivil: { required },
-    homoclave: { required, maxLength: maxLength(2) },
-    ocr: { required, maxLength: maxLength(13) },
-    telefono: { required, maxLength: maxLength(10) }
+    cliente: {
+      bornDate: { required, maxLength: maxLength(10) },
+      nombre: { required, maxLength: maxLength(30) },
+      apaterno: { required, maxLength: maxLength(20) },
+      amaterno: { required, maxLength: maxLength(20) },
+      direccion: { required, minLength: minLength(10) },
+      entidad: { required },
+      sexo: { required },
+      ocr: { required, maxLength: maxLength(13) },
+      telefono: { required, maxLength: maxLength(10) }
+    },
+    homoclave: { required, maxLength: maxLength(2) }
   },
   data() {
     return {
       db: config.db,
-      nombre: "",
-      apaterno: "",
-      amaterno: "",
-      bornDate: "",
-      sexo: false,
-      curp: "",
       homoclave: "",
-      ocr: "",
-      direccion: "",
-      telefono: "",
-      entidad: "",
-      comisionista: "",
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -253,35 +253,10 @@ export default {
         { id: "MEX-ZAC", value: "ZS", label: "Zacatecas (ZAC)" }
       ],
       switch1: false,
-      nuevoCliente: {
-        nombre: "",
-        apaterno: "",
-        amaterno: "",
-        bornDate: "",
-        sexo: false,
-        curp: "",
-        ocr: "",
-        direccion: "",
-        telefono: "",
-        entidad: "",
-        tipo: 1,
-        comisionista: ""
-      },
-      defaultCliente: {
-        nombre: "",
-        apaterno: "",
-        amaterno: "",
-        bornDate: "",
-        sexo: false,
-        curp: "",
-        ocr: "",
-        direccion: "",
-        telefono: "",
-        entidad: "",
-        tipo: 1,
-        comisionista: ""
-      },
-      comisionistas: []
+      // nuevoCliente: Object.assign({}, this.cliente),
+      // nuevoCliente: this.cliente,
+      comisionistas: [],
+      loadingDialog: false
     };
   },
   watch: {
@@ -295,18 +270,19 @@ export default {
   methods: {
     generateCurp() {
       if (
-        this.curp == "" &&
-        (this.nombre != "" &&
-          this.apaterno != "" &&
-          this.amaterno != "" &&
-          this.bornDate != "" &&
-          this.entidad != "" &&
-          this.sexo != "" &&
-          this.homoclave != "",
-        this.comisionista != 0)
+        this.cliente.nombre != "" &&
+        this.cliente.apaterno != "" &&
+        this.cliente.amaterno != "" &&
+        this.cliente.bornDate != "" &&
+        this.cliente.entidad != "" &&
+        this.cliente.sexo != "" &&
+        this.homoclave != "" &&
+        this.cliente.comisionista != 0
       ) {
-        this.amaterno =
-          this.amaterno == undefined ? "XXXXX" : this.amaterno;
+        this.cliente.amaterno =
+          this.cliente.amaterno == undefined
+            ? "XXXXX"
+            : this.cliente.amaterno;
         let apaternoFiltrado = this.filtrarApaterno();
         let amaternoFiltrado = this.filtrarAmaterno();
 
@@ -322,19 +298,21 @@ export default {
             ? "X"
             : amaternoFiltrado.substring(0, 1);
 
-        this.curp = c1 + c2 + c3;
+        this.cliente.curp = c1 + c2 + c3;
         let nombreFiltrado = this.filtrarNombre();
         this.setDateCurp();
-        this.curp += this.sexo + this.entidad;
+        this.cliente.curp +=
+          this.cliente.sexo + this.cliente.entidad;
         let consonantesApaterno = this.consonantesApaterno(apaternoFiltrado);
         let consonantesAmaterno = this.consonantesAmaterno(amaternoFiltrado);
         let consonantesNombre = this.consonantesNombre(nombreFiltrado);
 
-        this.curp +=
+        this.cliente.curp +=
           consonantesApaterno[0] == "Ñ" ? "X" : consonantesApaterno[0];
-        this.curp +=
+        this.cliente.curp +=
           consonantesAmaterno[0] == "Ñ" ? "X" : consonantesAmaterno[0];
-        this.curp += consonantesNombre[0] == "Ñ" ? "X" : consonantesNombre[0];
+        this.cliente.curp +=
+          consonantesNombre[0] == "Ñ" ? "X" : consonantesNombre[0];
       }
     },
     consonantesNombre(nombreFiltrado) {
@@ -401,13 +379,15 @@ export default {
       return consonantesApaterno;
     },
     setDateCurp() {
-      let year = this.bornDate.substring(2, 4);
-      let month = this.bornDate.substring(6, 7);
-      let day = this.bornDate.substring(8, 10);
+      let year = this.cliente.bornDate.substring(2, 4);
+      let month = this.cliente.bornDate.substring(6, 7);
+      let day = this.cliente.bornDate.substring(8, 10);
       month < 10
-        ? (this.curp += year + "0" + month)
-        : (this.curp += year + month);
-      day < 10 ? (this.curp += "0" + day) : (this.curp += day);
+        ? (this.cliente.curp += year + "0" + month)
+        : (this.cliente.curp += year + month);
+      day < 10
+        ? (this.cliente.curp += "0" + day)
+        : (this.cliente.curp += day);
     },
     getSecondChar(apaternoFiltrado) {
       for (let i = 1; i < apaternoFiltrado.length; i++) {
@@ -429,7 +409,7 @@ export default {
       return "X";
     },
     filtrarNombre() {
-      let partirNombre = this.nombre.split(" ");
+      let partirNombre = this.cliente.nombre.split(" ");
       if (partirNombre.length >= 2) {
         if (
           partirNombre[0] == "JOSE" ||
@@ -446,25 +426,25 @@ export default {
           partirNombre[0] == "JOZE" ||
           partirNombre[0] == "JOZÉ"
         ) {
-          this.curp += partirNombre[1].substring(0, 1);
+          this.cliente.curp += partirNombre[1].substring(0, 1);
           return partirNombre[1];
         } else {
-          this.curp +=
-            this.nombre.substring(0, 1) == "Ñ"
+          this.cliente.curp +=
+            this.cliente.nombre.substring(0, 1) == "Ñ"
               ? "X"
-              : this.nombre.substring(0, 1);
+              : this.cliente.nombre.substring(0, 1);
           return partirNombre[0];
         }
       } else {
-        this.curp +=
-          this.nombre.substring(0, 1) == "Ñ"
+        this.cliente.curp +=
+          this.cliente.nombre.substring(0, 1) == "Ñ"
             ? "X"
-            : this.nombre.substring(0, 1);
-        return this.nombre;
+            : this.cliente.nombre.substring(0, 1);
+        return this.cliente.nombre;
       }
     },
     filtrarAmaterno() {
-      let partirAmaterno = this.amaterno.split(" ");
+      let partirAmaterno = this.cliente.amaterno.split(" ");
       if (partirAmaterno.length >= 2) {
         for (let i = 0; i < partirAmaterno.length; i++) {
           if (
@@ -496,7 +476,7 @@ export default {
       }
     },
     filtrarApaterno() {
-      let partirApaterno = this.apaterno.split(" ");
+      let partirApaterno = this.cliente.apaterno.split(" ");
       if (partirApaterno.length >= 2) {
         for (let i = 0; i < partirApaterno.length; i++) {
           if (
@@ -528,111 +508,101 @@ export default {
       }
     },
     writeClientData() {
+      this.loadingDialog = true;
       this.generateCurp();
-      this.nuevoCliente.nombre = this.nombre;
-      this.nuevoCliente.apaterno = this.apaterno;
-      this.nuevoCliente.amaterno = this.amaterno;
-      this.nuevoCliente.bornDate = this.bornDate;
-      this.nuevoCliente.sexo = this.sexo;
-      this.nuevoCliente.ocr = this.ocr;
-      this.nuevoCliente.direccion = this.direccion.toUpperCase();
-      this.nuevoCliente.telefono = this.telefono;
-      this.nuevoCliente.entidad = this.entidad;
-      this.nuevoCliente.comisionista = this.comisionista;
-      this.nuevoCliente.curp =
-        this.curp.normalize("NFD").replace(/[\u0300-\u036f]/g, "") + this.homoclave;
-      if (this.curp.length == 16) {
+      this.cliente.curp =
+        this.cliente.curp
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "") + this.homoclave;
+      if (this.cliente.curp.length == 18) {
         this.db
           .ref("personas/")
           .push(this.nuevoCliente)
-          .then(response => {
+          .then(() => {
             this.clear();
-            console.log(response);
+            this.loadingDialog = false;
           });
       } else {
-        alert("LA CURP NO SE GENERÓ");
+        alert("Datos no guardados");
       }
     },
     clear() {
-      this.nuevoCliente = this.defaultCliente;
-      this.nombre = "";
-      this.apaterno = "";
-      this.amaterno = "";
-      this.bornDate = "";
-      this.sexo = false;
-      this.curp = "";
-      this.homoclave = "";
-      this.ocr = "";
-      this.direccion = "";
-      this.telefono = "";
-      this.entidad = "";
+      this.nuevoCliente = {};
       this.menu = false;
       this.$v.$reset();
     },
     saveDate(date) {
       this.$refs.menu.save(date);
     },
-    uppercasedName(){
-      this.nombre = this.nombre.toUpperCase();
+    uppercasedName() {
+      this.cliente.nombre = this.cliente.nombre.toUpperCase();
     },
-    uppercasedLastname(){
-      this.apaterno = this.apaterno.toUpperCase();
-      this.amaterno = this.amaterno.toUpperCase();
+    uppercasedLastname() {
+      this.cliente.apaterno = this.cliente.apaterno.toUpperCase();
+      this.cliente.amaterno = this.cliente.amaterno.toUpperCase();
     },
-    uppercasedAddress(){
-      this.direccion = this.direccion.toUpperCase();
+    uppercasedAddress() {
+      this.cliente.direccion = this.cliente.direccion.toUpperCase();
     }
   },
   computed: {
     nombreErrors() {
       const errors = [];
-      if (!this.$v.nombre.$dirty) return errors;
-      !this.$v.nombre.maxLength &&
+      if (!this.$v.cliente.nombre.$dirty) return errors;
+      !this.$v.cliente.nombre.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.nombre.required && errors.push("Este campo es obligatorio.");
+      !this.$v.cliente.nombre.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     amaternoErrors() {
       const errors = [];
-      if (!this.$v.amaterno.$dirty) return errors;
-      !this.$v.amaterno.maxLength &&
+      if (!this.$v.cliente.amaterno.$dirty) return errors;
+      !this.$v.cliente.amaterno.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.amaterno.required && errors.push("Este campo es obligatorio.");
+      !this.$v.cliente.amaterno.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     apaternoErrors() {
       const errors = [];
-      if (!this.$v.apaterno.$dirty) return errors;
-      !this.$v.apaterno.maxLength &&
+      if (!this.$v.cliente.apaterno.$dirty) return errors;
+      !this.$v.cliente.apaterno.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.apaterno.required && errors.push("Este campo es obligatorio.");
+      !this.$v.cliente.apaterno.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     sexoErrors() {
       const errors = [];
-      if (!this.$v.sexo.$dirty) return errors;
-      !this.$v.email.required && errors.push("Este campo es obligatorio");
+      if (!this.$v.cliente.sexo.$dirty) return errors;
+      !this.$v.cliente.email.required &&
+        errors.push("Este campo es obligatorio");
       return errors;
     },
     entidadErrors() {
       const errors = [];
-      if (!this.$v.entidad.$dirty) return errors;
-      !this.$v.entidad.required && errors.push("Este campo es obligatorio");
+      if (!this.$v.cliente.entidad.$dirty) return errors;
+      !this.$v.cliente.entidad.required &&
+        errors.push("Este campo es obligatorio");
       return errors;
     },
     addressErrors() {
       const errors = [];
-      if (!this.$v.direccion.$dirty) return errors;
-      !this.$v.direccion.minLength && errors.push("La direccion es incorrecta");
-      !this.$v.direccion.required && errors.push("Este campo es obligatorio.");
+      if (!this.$v.cliente.direccion.$dirty) return errors;
+      !this.$v.cliente.direccion.minLength &&
+        errors.push("La direccion es incorrecta");
+      !this.$v.cliente.direccion.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     bornDateErrors() {
       const errors = [];
-      if (!this.$v.bornDate.$dirty) return errors;
-      !this.$v.bornDate.maxLength &&
+      if (!this.$v.cliente.bornDate.$dirty) return errors;
+      !this.$v.cliente.bornDate.maxLength &&
         errors.push("La fecha de nacimiento es incorrecta.");
-      !this.$v.bornDate.required && errors.push("Este campo es obligatorio.");
+      !this.$v.cliente.bornDate.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     homoclaveErrors() {
@@ -645,18 +615,20 @@ export default {
     },
     ocrErrors() {
       const errors = [];
-      if (!this.$v.ocr.$dirty) return errors;
-      !this.$v.ocr.maxLength &&
+      if (!this.$v.cliente.ocr.$dirty) return errors;
+      !this.$v.cliente.ocr.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.ocr.required && errors.push("Este campo es obligatorio.");
+      !this.$v.cliente.ocr.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     },
     phoneErrors() {
       const errors = [];
-      if (!this.$v.telefono.$dirty) return errors;
-      !this.$v.telefono.maxLength &&
+      if (!this.$v.cliente.telefono.$dirty) return errors;
+      !this.$v.cliente.telefono.maxLength &&
         errors.push("El valor introducido es demasiado largo.");
-      !this.$v.telefono.required && errors.push("Este campo es obligatorio.");
+      !this.$v.cliente.telefono.required &&
+        errors.push("Este campo es obligatorio.");
       return errors;
     }
   },
@@ -669,6 +641,7 @@ export default {
         this.comisionistas.push(items[key]);
       }
     });
-  }
+  },
+  mounted() {}
 };
 </script>

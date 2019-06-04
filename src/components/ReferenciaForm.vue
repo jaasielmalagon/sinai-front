@@ -280,7 +280,7 @@ export default {
     writeClientData() {
       //this.db.ref("clientes/").push(this.nuevoCliente);
       this.db.ref("clientes/").push(this.nuevoCliente);
-      console.log("datos guardados...");
+      // console.log("datos guardados...");
     },
     submit() {
       this.$v.$touch();
