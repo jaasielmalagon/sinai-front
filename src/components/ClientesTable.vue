@@ -1,51 +1,87 @@
 <template>
-  <v-card>
+  <!-- <v-container grid-list-md text-xs-center> -->
+  <v-card class="light-blue lighten-5">
     <v-card-title>
-      <h1>Clientes</h1>
-      <v-spacer></v-spacer>
-      <v-select
-        @change="filtrarPrestamos($event)"
-        :items="comisionistas"
-        item-text="nombre"
-        :return-object="true"
-        label="Comisionistas"
-        no-data-text="No hay comisionistas"
-      ></v-select>
-      <v-spacer></v-spacer>
-      <v-text-field v-model="search" append-icon="search" label="Buscar" single-line hide-details></v-text-field>
+      <v-container grid-list-md text-xs-center>
+        <v-layout row wrap>
+          <v-flex xs4>
+            <div class="display-2 font-weight-light">Clientes</div>
+          </v-flex>
+          <v-flex xs8>
+            <v-layout row wrap>
+              <v-flex xs6>
+                <v-select
+                  @change="filtrarPrestamos($event)"
+                  :items="comisionistas"
+                  item-text="nombre"
+                  :return-object="true"
+                  label="Comisionistas"
+                  no-data-text="No hay comisionistas"
+                ></v-select>
+              </v-flex>
+              <v-flex xs6>
+                <v-text-field
+                  v-model="search"
+                  append-icon="search"
+                  label="Buscar"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="filteredItems"
-      :search="search"
-      :loading="loading"
-      class="elevation-1"
-    >
-      <template slot="items" slot-scope="props">
-        <!-- <td class="text-xs-center">{{ props.item.key }}</td> -->
-        <td
-          class="text-xs-center"
-        >{{ props.item.nombre }} {{ props.item.apaterno }} {{ props.item.amaterno }}</td>
-        <td class="text-xs-center">{{ props.item.curp }}</td>
-        <td class="text-xs-center">{{ props.item.ocr }}</td>
-        <td class="text-xs-center">{{ props.item.direccion }}</td>
-        <td class="text-xs-center">{{ props.item.telefono }}</td>
-        <!-- <td class="text-xs-center">{{ props.item.entidad }}</td> -->
-        <!-- <td class="text-xs-center">{{ props.item.tipo }}</td> -->
-        <td class="text-xs-center">
-          <v-btn @click="$emit('editClient', props.item)" icon small color="transparent">
-            <v-icon dark color="white">edit</v-icon>
-          </v-btn>
-          <v-btn @click="deleteItem(props.item)" icon small color="transparent">
-            <v-icon dark color="white">delete</v-icon>
-          </v-btn>
-        </td>
-      </template>
-      <template v-slot:no-results>
-        <v-alert :value="true" color="error" icon="warning">No se pudieron obtener resultados.</v-alert>
-      </template>
-    </v-data-table>
-
+    <v-card-text>
+      <v-data-table
+        :headers="headers"
+        :items="filteredItems"
+        :search="search"
+        :loading="loading"
+        class="elevation-1"
+        no-data-text="No existen registros..."
+      >
+        <template slot="headerCell" slot-scope="props">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <span v-on="on">{{ props.header.text }}</span>
+            </template>
+            <span>Ordenar por {{ props.header.text }}</span>
+          </v-tooltip>
+        </template>
+        <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+        <template slot="items" slot-scope="props">
+          <!-- <td class="text-xs-center">{{ props.item.key }}</td> -->
+          <td
+            class="text-xs-center"
+          >{{ props.item.nombre }} {{ props.item.apaterno }} {{ props.item.amaterno }}</td>
+          <td class="text-xs-center">{{ props.item.curp }}</td>
+          <td class="text-xs-center">{{ props.item.ocr }}</td>
+          <td class="text-xs-center">{{ props.item.direccion }}</td>
+          <td class="text-xs-center">{{ props.item.telefono }}</td>
+          <!-- <td class="text-xs-center">{{ props.item.entidad }}</td> -->
+          <!-- <td class="text-xs-center">{{ props.item.tipo }}</td> -->
+          <td class="text-xs-center">
+            <v-btn @click="$emit('editClient', props.item)" icon small color="transparent">
+              <v-icon dark color="light-blue accent-3">edit</v-icon>
+            </v-btn>
+            <v-btn @click="deleteItem(props.item)" icon small color="transparent">
+              <v-icon dark color="red lighten-1">delete</v-icon>
+            </v-btn>
+          </td>
+        </template>
+        <template
+          v-slot:pageText="props"
+        >Registros {{ props.pageStart }} - {{ props.pageStop }} de {{ props.itemsLength }}</template>
+        <template v-slot:no-results>
+          <v-alert :value="true" color="error" icon="warning">
+            El parámetro buscado
+            <strong>"{{search}}"</strong> no generó resultados.
+          </v-alert>
+        </template>
+      </v-data-table>
+    </v-card-text>
     <loading-dialog :activator="loadingDialog"></loading-dialog>
 
     <v-dialog v-model="deleteDialog" persistent max-width="290">
@@ -60,18 +96,19 @@
       </v-card>
     </v-dialog>
   </v-card>
+  <!-- </v-container> -->
 </template>
 
 <script>
 import config from "../config";
-import LoadingDialog from "./loadingDialog";
+import LoadingDialog from "./LoadingDialog";
 export default {
   components: { LoadingDialog },
   data() {
     return {
       db: config.db,
       search: "",
-      loading: false,
+      loading: true,
       deleteDialog: false,
       loadingDialog: false,
       selectedItem: {
@@ -97,24 +134,24 @@ export default {
           sortable: true,
           value: "nombre"
         },
-        { text: "Curp", align: "center", sortable: true, value: "adeudo" },
+        { text: "Curp", align: "center", sortable: true, value: "curp" },
         {
           text: "OCR",
           align: "center",
           sortable: true,
-          value: "pago"
+          value: "ocr"
         },
         {
           text: "Dirección",
           align: "center",
           sortable: true,
-          value: "comisionista"
+          value: "direccion"
         },
         {
           text: "Teléfono",
           align: "center",
           sortable: true,
-          value: "dia"
+          value: "telefono"
         },
         // { text: "Entidad", align: "center", sortable: true, value: "estado" },
         // { text: "Tipo", align: "center", value: "pagar" },
@@ -128,7 +165,7 @@ export default {
   mounted: function() {
     // this.cargarDatos();
   },
-  methods: {    
+  methods: {
     deleteItem(item) {
       // this.editedIndex = this.teams.indexOf(item);
       this.selectedItem = item;
@@ -139,7 +176,9 @@ export default {
       this.loadingDialog = true;
       this.db
         .ref("/personas/" + this.selectedItem.key)
-        .set(null)
+        .update({
+          activo: 0
+        })
         .then(() => {
           this.loadingDialog = false;
         });
@@ -147,21 +186,24 @@ export default {
     cargarPersonas(items) {
       this.items = [];
       for (let key in items) {
-        this.items.push({
-          key: key,
-          nombre: items[key].nombre,
-          apaterno: items[key].apaterno,
-          amaterno: items[key].amaterno,
-          bornDate: items[key].bornDate,
-          sexo: items[key].sexo,
-          curp: items[key].curp,
-          ocr: items[key].ocr,
-          direccion: items[key].direccion,
-          telefono: items[key].telefono,
-          entidad: items[key].entidad,
-          tipo: items[key].tipo,
-          comisionista: items[key].comisionista
-        });
+        // console.log(items[key]);
+        if (items[key].activo == 1) {
+          this.items.push({
+            key: key,
+            nombre: items[key].nombre,
+            apaterno: items[key].apaterno,
+            amaterno: items[key].amaterno,
+            bornDate: items[key].bornDate,
+            sexo: items[key].sexo,
+            curp: items[key].curp,
+            ocr: items[key].ocr,
+            direccion: items[key].direccion,
+            telefono: items[key].telefono,
+            entidad: items[key].entidad,
+            tipo: items[key].tipo,
+            comisionista: items[key].comisionista
+          });
+        }
       }
       this.items.reverse();
       this.filteredItems = this.items;
@@ -180,10 +222,9 @@ export default {
     //CARGAR PERSONAS
     this.db
       .ref("/personas")
-      .orderByChild('tipo')
+      .orderByChild("tipo")
       .equalTo(1)
       .on("value", snapshot => {
-        this.loading = true;
         this.cargarPersonas(snapshot.val());
         this.loading = false;
       });

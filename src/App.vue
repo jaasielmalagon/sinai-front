@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant.sync="mini"
@@ -7,6 +7,7 @@
       hide-overlay
       stateless
       app
+      :class="color"
     >
       <v-toolbar flat class="transparent">
         <v-list class="pa-0">
@@ -42,7 +43,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app>
+    <v-toolbar app :color="color">
       <router-link to="/">
         <v-toolbar-title class="headline text-uppercase">
           <span>SINAI</span>
@@ -50,7 +51,7 @@
         </v-toolbar-title>
       </router-link>
     </v-toolbar>
-    <v-content>
+    <v-content class="blue-grey lighten-4">
       <router-view/>
     </v-content>
   </v-app>
@@ -62,6 +63,8 @@ export default {
   components: {},
   data() {
     return {
+      color: "light-green lighten-5",
+      // color: "brown lighten-5",
       drawer: true,
       items: [
         { title: "Prestamos", icon: "attach_money", url: "/prestamos" },

@@ -9,17 +9,16 @@
   <div>
     <v-form>
       <v-container>
-        <h1>Nombre: {{cliente.nombre}}</h1>
         <v-layout row wrap>
-          <v-flex xs6>
+          <v-flex xs6 v-if="!esReferencia">
             <v-select
               v-model="cliente.comisionista"
-              @change="comisionista = $event.id"
               :items="comisionistas"
               item-text="nombre"
               :return-object="true"
               label="Comisionista"
               no-data-text="No hay comisionistas"
+              @input="generateCurp"
             ></v-select>
           </v-flex>
           <v-flex xs6>
@@ -36,13 +35,13 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  v-model="cliente.bornDate"                  
+                  v-model="cliente.bornDate"
                   label="Fecha de nacimiento"
                   :error-messages="bornDateErrors"
                   readonly
                   v-on="on"
                   @input="$v.cliente.bornDate.$touch()"
-                  @blur="$v.cliente.bornDate.$touch()"
+                  @blur="$v.cliente.bornDate.$touch()"                  
                 ></v-text-field>
               </template>
               <v-date-picker
@@ -51,6 +50,7 @@
                 :max="maxDate"
                 min="1950-01-01"
                 @change="saveDate"
+                @input="generateCurp"
               ></v-date-picker>
             </v-menu>
           </v-flex>
@@ -64,6 +64,7 @@
               @input="$v.cliente.nombre.$touch()"
               @blur="$v.cliente.nombre.$touch()"
               @keyup="uppercasedName"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
           <v-flex xs12 md4>
@@ -76,6 +77,7 @@
               @input="$v.cliente.apaterno.$touch()"
               @blur="$v.cliente.apaterno.$touch()"
               @keyup="uppercasedLastname"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
           <v-flex xs12 md4>
@@ -88,10 +90,11 @@
               @input="$v.cliente.amaterno.$touch()"
               @blur="$v.cliente.amaterno.$touch()"
               @keyup="uppercasedLastname"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
           <v-flex xs5>
-            <v-text-field v-model="cliente.curp" label="CURP" readonly></v-text-field>
+            <v-text-field v-model="cliente.curp" label="CURP" disabled readonly></v-text-field>
           </v-flex>
           <v-flex xs3>
             <v-text-field
@@ -102,6 +105,7 @@
               required
               @input="$v.homoclave.$touch()"
               @blur="$v.homoclave.$touch()"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
           <v-flex xs4>
@@ -113,10 +117,11 @@
               required
               @input="$v.cliente.ocr.$touch()"
               @blur="$v.cliente.ocr.$touch()"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
           <v-flex xs7 md4>
-            <v-radio-group row v-model="cliente.sexo" :error-messages="sexoErrors">
+            <v-radio-group row v-model="cliente.sexo" :error-messages="sexoErrors" @change="generateCurp">
               <div>Sexo:</div>
               <v-radio label="Hombre" value="H"></v-radio>
               <v-radio label="Mujer" value="M"></v-radio>
@@ -125,6 +130,7 @@
           <v-flex xs5 md4 v-if="!esReferencia">
             <v-switch
               @change="$emit('esCasado', switch1)"
+              @input="generateCurp"
               v-model="switch1"
               color="success"
               label="El solicitante es casado."
@@ -141,6 +147,7 @@
               required
               @change="$v.cliente.entidad.$touch()"
               @blur="$v.cliente.entidad.$touch()"
+              @input="generateCurp"
             ></v-select>
           </v-flex>
           <v-flex xs5>
@@ -152,6 +159,7 @@
               required
               @input="$v.cliente.telefono.$touch()"
               @blur="$v.cliente.telefono.$touch()"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
           <v-flex xs12>
@@ -163,14 +171,12 @@
               @input="$v.cliente.direccion.$touch()"
               @blur="$v.cliente.direccion.$touch()"
               @keyup="uppercasedAddress"
+              @change="generateCurp"
             ></v-text-field>
           </v-flex>
         </v-layout>
       </v-container>
-      <v-btn color="green lighten-1" @click="writeClientData">Aceptar</v-btn>
-      <v-btn color="red darken-4" @click="clear">Cancelar</v-btn>
-    </v-form>
-    <loading-dialog :activator="loadingDialog"></loading-dialog>
+    </v-form>    
   </div>
 </template>
 
@@ -178,19 +184,20 @@
 /* eslint-disable */
 import { validationMixin } from "vuelidate";
 import { required, maxLength, minLength } from "vuelidate/lib/validators";
-import config from "../config";
-import LoadingDialog from "./loadingDialog";
 
 export default {
   name: "ClienteForm",
   props: {
-    cliente: {
+    initialClient: {
       type: Object,
+      required: true
+    },
+    comisionistas:{
+      type: Array,
       required: true
     },
     esReferencia: Boolean
   },
-  components: { LoadingDialog },
   mixins: [validationMixin],
   validations: {
     cliente: {
@@ -208,8 +215,7 @@ export default {
   },
   data() {
     return {
-      db: config.db,
-      homoclave: "",
+      homoclave: this.initialClient.curp.length == 18 ? this.initialClient.curp.substr(17,2) : "00",
       maxDate:
         new Date().toISOString().substr(0, 4) -
         18 +
@@ -253,10 +259,7 @@ export default {
         { id: "MEX-ZAC", value: "ZS", label: "Zacatecas (ZAC)" }
       ],
       switch1: false,
-      // nuevoCliente: Object.assign({}, this.cliente),
-      // nuevoCliente: this.cliente,
-      comisionistas: [],
-      loadingDialog: false
+      // comisionistas: [],
     };
   },
   watch: {
@@ -269,6 +272,7 @@ export default {
   },
   methods: {
     generateCurp() {
+      // console.log("generando curp...")
       if (
         this.cliente.nombre != "" &&
         this.cliente.apaterno != "" &&
@@ -276,13 +280,10 @@ export default {
         this.cliente.bornDate != "" &&
         this.cliente.entidad != "" &&
         this.cliente.sexo != "" &&
-        this.homoclave != "" &&
-        this.cliente.comisionista != 0
+        this.homoclave != "" 
       ) {
         this.cliente.amaterno =
-          this.cliente.amaterno == undefined
-            ? "XXXXX"
-            : this.cliente.amaterno;
+          this.cliente.amaterno == undefined ? "XXXXX" : this.cliente.amaterno;
         let apaternoFiltrado = this.filtrarApaterno();
         let amaternoFiltrado = this.filtrarAmaterno();
 
@@ -301,8 +302,7 @@ export default {
         this.cliente.curp = c1 + c2 + c3;
         let nombreFiltrado = this.filtrarNombre();
         this.setDateCurp();
-        this.cliente.curp +=
-          this.cliente.sexo + this.cliente.entidad;
+        this.cliente.curp += this.cliente.sexo + this.cliente.entidad;
         let consonantesApaterno = this.consonantesApaterno(apaternoFiltrado);
         let consonantesAmaterno = this.consonantesAmaterno(amaternoFiltrado);
         let consonantesNombre = this.consonantesNombre(nombreFiltrado);
@@ -313,6 +313,7 @@ export default {
           consonantesAmaterno[0] == "Ñ" ? "X" : consonantesAmaterno[0];
         this.cliente.curp +=
           consonantesNombre[0] == "Ñ" ? "X" : consonantesNombre[0];
+        this.cliente.curp += this.homoclave;
       }
     },
     consonantesNombre(nombreFiltrado) {
@@ -380,14 +381,10 @@ export default {
     },
     setDateCurp() {
       let year = this.cliente.bornDate.substring(2, 4);
-      let month = this.cliente.bornDate.substring(6, 7);
-      let day = this.cliente.bornDate.substring(8, 10);
-      month < 10
-        ? (this.cliente.curp += year + "0" + month)
-        : (this.cliente.curp += year + month);
-      day < 10
-        ? (this.cliente.curp += "0" + day)
-        : (this.cliente.curp += day);
+      let month = this.cliente.bornDate.substring(5, 7);
+      let day = this.cliente.bornDate.substring(8, 10);      
+      this.cliente.curp += year + month + day
+      // console.log(this.cliente.bornDate)
     },
     getSecondChar(apaternoFiltrado) {
       for (let i = 1; i < apaternoFiltrado.length; i++) {
@@ -506,26 +503,7 @@ export default {
       } else {
         return partirApaterno[0];
       }
-    },
-    writeClientData() {
-      this.loadingDialog = true;
-      this.generateCurp();
-      this.cliente.curp =
-        this.cliente.curp
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "") + this.homoclave;
-      if (this.cliente.curp.length == 18) {
-        this.db
-          .ref("personas/")
-          .push(this.nuevoCliente)
-          .then(() => {
-            this.clear();
-            this.loadingDialog = false;
-          });
-      } else {
-        alert("Datos no guardados");
-      }
-    },
+    },    
     clear() {
       this.nuevoCliente = {};
       this.menu = false;
@@ -543,9 +521,19 @@ export default {
     },
     uppercasedAddress() {
       this.cliente.direccion = this.cliente.direccion.toUpperCase();
+    },
+    submit(){
+      this.$v.$touch();
+      return this.$v.$error;
     }
   },
   computed: {
+    cliente() {
+      if (this.initialClient.curp.length == 18) {
+        this.homoclave = this.initialClient.curp.substring(16, 18);
+      }
+      return this.initialClient;
+    },
     nombreErrors() {
       const errors = [];
       if (!this.$v.cliente.nombre.$dirty) return errors;
@@ -576,7 +564,7 @@ export default {
     sexoErrors() {
       const errors = [];
       if (!this.$v.cliente.sexo.$dirty) return errors;
-      !this.$v.cliente.email.required &&
+      !this.$v.cliente.sexo.required &&
         errors.push("Este campo es obligatorio");
       return errors;
     },
@@ -631,17 +619,6 @@ export default {
         errors.push("Este campo es obligatorio.");
       return errors;
     }
-  },
-  created() {
-    //CARGAR COMISIONISTAS
-    this.db.ref("/empleados").on("value", snapshot => {
-      this.comisionistas = [];
-      let items = snapshot.val();
-      for (let key in items) {
-        this.comisionistas.push(items[key]);
-      }
-    });
-  },
-  mounted() {}
+  }
 };
 </script>
