@@ -11,7 +11,7 @@
             <v-layout row wrap>
               <v-flex xs6>
                 <v-select
-                  @change="filtrarPrestamos($event)"
+                  @change="filtrar($event)"
                   :items="comisionistas"
                   item-text="nombre"
                   :return-object="true"
@@ -53,21 +53,26 @@
         <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
         <template slot="items" slot-scope="props">
           <!-- <td class="text-xs-center">{{ props.item.key }}</td> -->
-          <td
-            class="text-xs-center"
-          >{{ props.item.nombre }} {{ props.item.apaterno }} {{ props.item.amaterno }}</td>
+          <td class="text-xs-center">{{ props.item.nombre }}</td>
+          <td>{{ props.item.apaterno }}</td>
+          <td>{{ props.item.amaterno }}</td>
           <td class="text-xs-center">{{ props.item.curp }}</td>
           <td class="text-xs-center">{{ props.item.ocr }}</td>
           <td class="text-xs-center">{{ props.item.direccion }}</td>
           <td class="text-xs-center">{{ props.item.telefono }}</td>
           <!-- <td class="text-xs-center">{{ props.item.entidad }}</td> -->
           <!-- <td class="text-xs-center">{{ props.item.tipo }}</td> -->
-          <td class="text-xs-center">
+          <td class="text-xs-center" v-if="options == 1">
             <v-btn @click="$emit('editClient', props.item)" icon small color="transparent">
               <v-icon dark color="light-blue accent-3">edit</v-icon>
             </v-btn>
             <v-btn @click="deleteItem(props.item)" icon small color="transparent">
               <v-icon dark color="red lighten-1">delete</v-icon>
+            </v-btn>
+          </td>
+          <td class="text-xs-center" v-if="options == 2">
+            <v-btn @click="$emit('selectClient', props.item)" icon small color="transparent">
+              <v-icon dark color="light-blue accent-3">check</v-icon>
             </v-btn>
           </td>
         </template>
@@ -84,7 +89,7 @@
     </v-card-text>
     <loading-dialog :activator="loadingDialog"></loading-dialog>
 
-    <v-dialog v-model="deleteDialog" persistent max-width="290">
+    <v-dialog v-if="options == 1" v-model="deleteDialog" persistent max-width="290">
       <v-card>
         <v-card-title class="headline">¿Realmente desea eliminar el elemento seleccionado?</v-card-title>
         <v-card-text>Si lo elimina, la información no podrá ser recuperada.</v-card-text>
@@ -103,7 +108,14 @@
 import config from "../config";
 import LoadingDialog from "./LoadingDialog";
 export default {
+  name: "ClientesTable",
   components: { LoadingDialog },
+  props: {
+    options: {
+      type: Number,
+      required: true
+    }
+  },
   data() {
     return {
       db: config.db,
@@ -129,10 +141,22 @@ export default {
       headers: [
         // { text: "Key", align: "center", sortable: true, value: "key" },
         {
-          text: "Cliente",
+          text: "Nombre",
           align: "center",
           sortable: true,
           value: "nombre"
+        },
+        {
+          text: "Ap. paterno",
+          align: "center",
+          sortable: true,
+          value: "apaterno"
+        },
+        {
+          text: "Ap. materno",
+          align: "center",
+          sortable: true,
+          value: "amaterno"
         },
         { text: "Curp", align: "center", sortable: true, value: "curp" },
         {
@@ -208,7 +232,7 @@ export default {
       this.items.reverse();
       this.filteredItems = this.items;
     },
-    filtrarPrestamos(comisionista) {
+    filtrar(comisionista) {
       this.filteredItems = this.items;
       if (comisionista.id !== 0) {
         let items = this.filteredItems.filter(function(item) {

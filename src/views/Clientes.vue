@@ -14,7 +14,7 @@
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12>
-        <clientes-table v-on:editClient="editItem($event)"></clientes-table>
+        <clientes-table v-on:editClient="editItem($event)" :options="1"></clientes-table>
       </v-flex>
     </v-layout>
     <v-dialog
@@ -133,14 +133,12 @@
 import ClienteForm from "../components/ClienteForm";
 import ClientesTable from "../components/ClientesTable";
 import LoadingDialog from "../components/LoadingDialog";
-import Alert from "../components/Alert";
 import config from "../config";
 import { setTimeout } from "timers";
-import { messaging } from "firebase";
 
 export default {
   name: "Clientes",
-  components: { ClienteForm, ClientesTable, LoadingDialog, Alert },
+  components: { ClienteForm, ClientesTable, LoadingDialog },
   data() {
     return {
       db: config.db,
@@ -368,10 +366,10 @@ export default {
               () => {
                 return this.normalizedObject(this.solicitante, 1);
               },
-              (error, commited, snapshot) => {
+              (error, commited) => {
                 if (error) {
                   flag = false;
-                  console.error(error);
+                  // console.error(error);
                 } else if (!commited) {
                   flag = false;
                 }
@@ -384,10 +382,10 @@ export default {
               () => {
                 return this.normalizedObject(this.conyuge, 2);
               },
-              (error, commited, snapshot) => {
+              (error, commited) => {
                 if (error) {
                   flag = false;
-                  console.error(error);
+                  // console.error(error);
                 } else if (!commited) {
                   flag = false;
                 }
@@ -400,10 +398,10 @@ export default {
               () => {
                 return this.normalizedObject(this.referencia, 3);
               },
-              (error, commited, snapshot) => {
+              (error, commited) => {
                 if (error) {
                   flag = false;
-                  console.error(error);
+                  // console.error(error);
                 } else if (!commited) {
                   flag = false;
                 }
@@ -416,10 +414,10 @@ export default {
               () => {
                 return this.normalizedObject(this.aval, 4);
               },
-              (error, commited, snapshot) => {
+              (error, commited) => {
                 if (error) {
                   flag = false;
-                  console.error(error);
+                  // console.error(error);
                 } else if (!commited) {
                   flag = false;
                 }

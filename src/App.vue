@@ -1,14 +1,15 @@
 <template>
-  <v-app>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant.sync="mini"
-      disable-resize-watcher
-      hide-overlay
-      stateless
-      app
-      :class="color"
-    >
+  <v-app>    
+    <v-toolbar app :color="color">
+      <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
+      <router-link to="/">
+        <v-toolbar-title class="headline text-uppercase">
+          <span>SINAI </span>
+          <span class="font-weight-light">V1.0</span>
+        </v-toolbar-title>
+      </router-link>
+    </v-toolbar>
+    <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" temporary app :class="color">
       <v-toolbar flat class="transparent">
         <v-list class="pa-0">
           <v-list-tile avatar>
@@ -20,11 +21,11 @@
               <v-list-tile-title>Nombre de Usuario</v-list-tile-title>
             </v-list-tile-content>
 
-            <v-list-tile-action>
+            <!-- <v-list-tile-action>
               <v-btn icon @click.stop="mini = !mini">
                 <v-icon>chevron_left</v-icon>
               </v-btn>
-            </v-list-tile-action>
+            </v-list-tile-action> -->
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -43,14 +44,6 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app :color="color">
-      <router-link to="/">
-        <v-toolbar-title class="headline text-uppercase">
-          <span>SINAI</span>
-          <span class="font-weight-light">V 1.0</span>
-        </v-toolbar-title>
-      </router-link>
-    </v-toolbar>
     <v-content class="blue-grey lighten-4">
       <router-view/>
     </v-content>
@@ -65,7 +58,7 @@ export default {
     return {
       color: "light-green lighten-5",
       // color: "brown lighten-5",
-      drawer: true,
+      drawer: false,
       items: [
         { title: "Prestamos", icon: "attach_money", url: "/prestamos" },
         { title: "Clientes", icon: "person_pin", url: "/clientes" },
@@ -86,7 +79,7 @@ export default {
         },
         { title: "Nomina", icon: "payment", url: "/nomina" }
       ],
-      mini: true,
+      mini: false,
       right: null
     };
   }

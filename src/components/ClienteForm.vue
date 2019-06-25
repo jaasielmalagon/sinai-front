@@ -10,7 +10,7 @@
     <v-form>
       <v-container>
         <v-layout row wrap>
-          <v-flex xs6 v-if="!esReferencia">
+          <v-flex xs12 md6 v-if="!esReferencia">
             <v-select
               v-model="cliente.comisionista"
               :items="comisionistas"
@@ -21,7 +21,7 @@
               @input="generateCurp"
             ></v-select>
           </v-flex>
-          <v-flex xs6>
+          <v-flex xs12 md6>
             <v-menu
               ref="menu"
               v-model="menu"
