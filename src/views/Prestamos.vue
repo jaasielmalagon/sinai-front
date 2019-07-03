@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md text-xs-center>
+  <v-container fluid>
     <v-layout row wrap>
       <v-flex xs12>
         <div class="text-xs-center">
@@ -9,9 +9,9 @@
         </div>
       </v-flex>
     </v-layout>
-    <v-layout row wrap>
+    <v-layout row wrap style="background-color: red">
       <v-flex xs12>
-        <prestamos-table v-on:editClient="editItem($event)"></prestamos-table>
+        <prestamos-table v-on:selectItem="selectItem($event)"></prestamos-table>
       </v-flex>
     </v-layout>
     <v-dialog
@@ -22,21 +22,44 @@
       transition="dialog-bottom-transition"
     >
       <v-card>
-        <v-toolbar dark class="light-blue lighten-2">
-          <v-btn icon dark @click="cancel">
+        <v-toolbar dark color="#4472C4">
+          <v-btn icon dark @click="cancel(1)">
             <v-icon>close</v-icon>
           </v-btn>
           <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn dark flat @click="saveData">
-              <v-icon>save</v-icon>
-            </v-btn>
+            <v-layout row justify-center>
+              <v-dialog v-model="confirmationDialog" persistent max-width="290">
+                <template v-slot:activator="{ on }">
+                  <v-btn dark flat v-on="on" :disabled="prestamo.tabla ==''">
+                    <v-icon color="white">save</v-icon>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="headline">¿Realmente desea guardar la información?</v-card-title>
+                  <v-card-text class="text-xs-justify">
+                    <p>Al presionar en "Si, continuar" el sistema asignará al cliente el préstamo con el balance de amortización generado.</p>
+                    <p>Antes de continuar asegúrese de haber comprobado que toda la información sea correcta.</p>
+                    <strong>Esta acción es irreversible y no podrá ser modificada posteriormente.</strong>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="red darken-1"
+                      flat
+                      @click="confirmationDialog = false"
+                    >No, cancelar</v-btn>
+                    <v-btn color="green darken-1" flat @click="saveData">Si, continuar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-layout>
           </v-toolbar-items>
         </v-toolbar>
 
         <v-card-text>
-          <v-flex xs12 md4 d-flex offset-md4 style="margin-bottom: 5px">
+          <v-flex xs12 md4 d-flex offset-md4 style="margin-bottom: 5px" v-if="!showForm">
             <div>
               <v-alert
                 v-model="alert.show"
@@ -51,48 +74,93 @@
           <!-- <pre>{{$data.solicitud}}</pre> -->
           <!-- <v-divider class="divisor"></v-divider> -->
 
-          <v-flex xs12 d-flex v-if="showForm">
-            <v-card>
-              <v-toolbar class="light-green lighten-1" dark>
-                <v-toolbar-title>
-                  Cliente: {{prestamo.cliente.nombre}} {{prestamo.cliente.apaterno}} {{prestamo.cliente.amaterno}}
-                  <br>
-                  Comisionista: {{prestamo.comisionista.nombre}}
-                </v-toolbar-title>
+          <v-flex xs12 md8 offset-md2 d-flex v-if="showForm && prestamo.cliente != ''">
+            <v-card color="grey lighten-5">
+              <v-toolbar color="#4472C4" dark>
+                <v-toolbar-title>Parámetros del préstamo</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
+                <div>
+                  <v-alert
+                    v-model="alert.show"
+                    dismissible
+                    transition="scale-transition"
+                    :color="alert.style"
+                    icon="warning"
+                    class="text-xs-center"
+                  >{{alert.message}}</v-alert>
+                </div>
+                <v-container>
+                  <v-layout row wrap class="text-xs-center">
+                    <v-flex xs6 class="headline">
+                      <v-card>
+                        <v-card-title class="headline title font-weight-regular">Cliente:</v-card-title>
+                        <v-card-text
+                          class="mx-2 subheading"
+                        >{{prestamo.cliente.nombre}} {{prestamo.cliente.apaterno}} {{prestamo.cliente.amaterno}}</v-card-text>
+                      </v-card>
+                    </v-flex>
+                    <v-flex xs6 class="headline">
+                      <v-card>
+                        <v-card-title class="headline title font-weight-regular">Comisionista:</v-card-title>
+                        <v-card-text class="mx-2 body-2">{{prestamo.comisionista.nombre}}</v-card-text>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
                 <prestamo-form ref="prestamoForm" :prestamo="prestamo"></prestamo-form>
               </v-card-text>
               <v-card-actions>
-                <v-btn color="error">Cancelar</v-btn>
+                <v-spacer></v-spacer>
                 <v-btn color="success" @click="generarPrestamo">Calcular</v-btn>
+                <v-btn color="error" @click="cancel(0)">Cancelar</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
 
-          <v-divider class="divisor" v-if="showForm && prestamo.cliente == ''"></v-divider>
+          <v-divider class="divisor" v-if="showForm && prestamo.cliente != ''"></v-divider>
 
-          <v-flex xs12 d-flex v-if="prestamo.tabla != ''">
-            <v-card>
-              <v-toolbar class="light-green lighten-1" dark>
-                <v-toolbar-title>Detalles del préstamo</v-toolbar-title>
-              </v-toolbar>
-              <v-card-text>
-                <v-data-table :items="prestamo.tabla" class="elevation-1" hide-actions>
-                  <template v-slot:items="props">
-                    <td>{{ props.item }}</td>
-                    <td>{{ props.item.name }}</td>
-                    <td class="text-xs-right">{{ props.item.calories }}</td>
-                    <td class="text-xs-right">{{ props.item.fat }}</td>
-                    <td class="text-xs-right">{{ props.item.carbs }}</td>
-                    <td class="text-xs-right">{{ props.item.protein }}</td>
-                    <td class="text-xs-right">{{ props.item.iron }}</td>
-                  </template>
-                </v-data-table>
-              </v-card-text>
-            </v-card>
+          <v-flex
+            id="detalles-prestamo"
+            xs12
+            md10
+            offset-md1
+            xl8
+            offset-xl2
+            d-flex
+            v-if="prestamo.tabla != ''"
+          >
+            <amortizacion-table :prestamo="prestamo"></amortizacion-table>
           </v-flex>
 
+          <v-divider class="divisor" v-if="prestamo.tabla != ''"></v-divider>
+
+          <v-flex
+            id="caratula-prestamo"
+            xs12
+            md10
+            offset-md1
+            xl8
+            offset-xl2
+            d-flex
+            v-if="prestamo.tabla != ''"
+          >
+            <caratula-credito :prestamo="prestamo"></caratula-credito>
+          </v-flex>
+
+          <v-divider class="divisor" v-if="prestamo.tabla != ''"></v-divider>
+
+          <v-flex            
+            xs12
+            md10
+            offset-md1
+            xl8
+            offset-xl2
+            d-flex
+            v-if="prestamo.tabla != ''"
+          >
+            <pagare :prestamo="prestamo"></pagare>
+          </v-flex>
           <v-divider class="divisor" v-if="showForm && prestamo.cliente == ''"></v-divider>
           <v-flex xs12 d-flex v-if="prestamo.cliente == ''">
             <clientes-table v-on:selectClient="setSolicitud($event)" :options="2"></clientes-table>
@@ -106,6 +174,9 @@
 </template>
 
 <script>
+import Pagare from "../components/Pagare";
+import CaratulaCredito from "../components/CaratulaCredito";
+import AmortizacionTable from "../components/AmortizacionTable";
 import PrestamosTable from "../components/PrestamosTable";
 import PrestamoForm from "../components/PrestamoForm";
 import ClientesTable from "../components/ClientesTable";
@@ -119,7 +190,10 @@ export default {
     PrestamosTable,
     PrestamoForm,
     ClientesTable,
-    LoadingDialog
+    LoadingDialog,
+    AmortizacionTable,
+    CaratulaCredito,
+    Pagare
   },
   data() {
     return {
@@ -164,6 +238,7 @@ export default {
         plazo: "",
         comisionista: "",
         pago: "",
+        abonos: [],
         tabla: [] //{ fecha: "", capital: "", interes: "", pago: "", inicial: "", final: "" }
       },
       defaultPrestamo: {
@@ -178,9 +253,10 @@ export default {
         plazo: "",
         comisionista: "",
         pago: "",
+        abonos: [],
         tabla: [] //{ fecha: "", capital: "", interes: "", pago: "", inicial: "", final: "" }
       },
-      amortHeaders:["Pago","Fecha","Abono a capital","Interés","Total de pago","Saldo anterior", "Saldo final"]
+      confirmationDialog: false
     };
   },
   methods: {
@@ -190,26 +266,22 @@ export default {
       if (
         this.prestamo.solicitud != "" &&
         this.prestamo.cliente != "" &&
-        this.prestamo.tabla.length > 0 &&
+        this.prestamo.tabla.length >= 16 &&
         formInvalid == false
       ) {
-        // let generado = this.generarPrestamo();
-        // if (generado) {
         this.db
           .ref("prestamos/")
           .push(this.prestamo)
           .then(() => {
             this.loadingDialog = false;
-            this.alerta("Préstamo generado correctamente", "success");
+            this.alerta(
+              "Préstamo generado y guardado correctamente",
+              "success"
+            );
+            this.confirmationDialog = false;
             this.closeAlert();
+            this.cancel(0);
           });
-        // } else {
-        // this.loadingDialog = false;
-        // this.alerta(
-        //   "El préstamo no ha sido generado correctamente, por favor verifique la información y reintente.",
-        //   "error"
-        // );
-        // }
       } else {
         this.loadingDialog = false;
         this.alerta(
@@ -220,23 +292,22 @@ export default {
       }
     },
     buscarPrestamoActivo(item) {
+      // console.log(item);
       let result = false;
       this.db
-        .ref("/prestamos/cliente")
-        .orderByChild("key")
+        .ref("/prestamos")
+        .orderByChild("cliente/key")
         .equalTo(item.key)
         .once("value", snapshot => {
           let snap = snapshot.val();
           for (let key in snap) {
-            console.log(snap[key]);
-            return;
             if (snap[key].activo == true) {
+              // console.log(snap[key]);
               result = true;
               break;
             }
           }
         });
-      // console.log(result);
       return result;
     },
     generarPrestamo() {
@@ -255,7 +326,11 @@ export default {
           this.prestamo.intereses = parseFloat(
             (pagoInteres * this.prestamo.plazo).toFixed(2)
           );
+          this.prestamo.totalPrestamo = parseFloat(
+            this.prestamo.intereses + this.prestamo.capital
+          );
           this.tablaAmortizacion();
+          this.loadingDialog = false;
         }
       } else {
         this.loadingDialog = false;
@@ -346,9 +421,11 @@ export default {
         this.closeAlert();
       }
     },
-    editItem(item) {
+    selectItem(item) {
+      console.log(item);
+      return;
       this.loadingDialog = true;
-      this.cancel();
+      this.cancel(1);
       this.formTitle = "Editar cliente";
       this.db
         .ref("/solicitudes")
@@ -367,9 +444,11 @@ export default {
       this.formTitle = "Generar préstamo";
       this.formDialog = true;
     },
-    cancel() {
-      this.showForm = false;
-      this.formDialog = false;
+    cancel(x) {
+      if (x == 1) {
+        this.showForm = false;
+        this.formDialog = false;
+      }
       Object.assign(this.solicitud, this.defaultSolicitud);
       Object.assign(this.prestamo, this.defaultPrestamo);
     },

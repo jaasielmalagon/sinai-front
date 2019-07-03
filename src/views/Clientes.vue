@@ -26,7 +26,7 @@
     >
       <v-card>
         <!-- <v-card-title> -->
-        <v-toolbar dark class="light-blue lighten-2">
+        <v-toolbar color="#4472C4" dark>
           <v-btn icon dark @click="cancel">
             <v-icon>close</v-icon>
           </v-btn>
@@ -55,7 +55,7 @@
 
           <v-flex xs10 d-flex offset-xs1>
             <v-card>
-              <v-toolbar class="light-green lighten-1" dark>
+              <v-toolbar color="#4472C4" dark>
                 <v-toolbar-title>Datos del solicitante</v-toolbar-title>
               </v-toolbar>
               <!-- <cliente-form
@@ -79,7 +79,7 @@
 
           <v-flex v-if="married" xs10 d-flex offset-xs1>
             <v-card>
-              <v-toolbar class="light-green lighten-1" dark>
+              <v-toolbar color="#4472C4" dark>
                 <v-toolbar-title>Datos del conyuge</v-toolbar-title>
               </v-toolbar>
               <cliente-form
@@ -94,7 +94,7 @@
 
           <v-flex xs10 d-flex offset-xs1>
             <v-card>
-              <v-toolbar class="light-green lighten-1" dark>
+              <v-toolbar color="#4472C4" dark>
                 <v-toolbar-title>Datos de la referencia</v-toolbar-title>
               </v-toolbar>
               <cliente-form
@@ -109,7 +109,7 @@
 
           <v-flex xs10 d-flex offset-xs1>
             <v-card>
-              <v-toolbar class="light-green lighten-1" dark>
+              <v-toolbar color="#4472C4" dark>
                 <v-toolbar-title>Datos del aval</v-toolbar-title>
               </v-toolbar>
               <cliente-form

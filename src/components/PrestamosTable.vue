@@ -44,26 +44,6 @@
         rows-per-page-text="Registros por página"
       >
         <template slot="headerCell" slot-scope="props">
-          <!-- <template v-for="(headers, i) in [processTableHeaders(props.headers)]">
-            <tr :key="i">
-              <th
-                v-for="header in headers.parents"
-                :key="header.value"
-                :rowspan="header.rowspan"
-                :colspan="header.colspan"
-                :width="header.width"
-                :class="header.align ? `text-xs-${header.align}` : ''"
-              >{{ header.text }}</th>
-            </tr>
-            <tr v-if="headers.children" :key="i">
-              <th
-                v-for="header in headers.children"
-                :key="header.value"
-                :width="header.width"
-                :class="header.align ? `text-xs-${header.align}` : ''"
-              >{{ header.text }}</th>
-            </tr>
-          </template>-->
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <span v-on="on">{{ props.header.text }}</span>
@@ -77,21 +57,46 @@
           <td class="text-xs-center">{{ props.item.cliente.apaterno }}</td>
           <td class="text-xs-center">{{ props.item.cliente.amaterno }}</td>
           <td class="text-xs-center">{{ props.item.inicio }}</td>
-          <td class="text-xs-center">{{ props.item.capital }}</td>
-          <td class="text-xs-center">{{ props.item.intereses }}</td>
+          <td class="text-xs-center">
+            <strong>$</strong>
+            {{ props.item.capital }}
+          </td>
+          <td class="text-xs-center">
+            <strong>$</strong>
+            {{ props.item.intereses }}
+          </td>
           <td class="text-xs-center">
             <strong>$</strong>
             {{ props.item.montototal }}
           </td>
-          <td class="text-xs-center">{{ props.item.tipo }}</td>
+          <td class="text-xs-center">
+            <strong>{{ props.item.tipo }}</strong>
+          </td>
           <td class="text-xs-center">{{ props.item.comisionista.nombre }}</td>
-          <td class="justify-center layout px-0">
-            <!-- <v-btn @click="$emit('editClient', props.item)" icon  color="transparent"> -->
-            <v-icon
-              @click="$emit('editClient', props.item)"
-              color="success"
-              class="mr-2"
-            >remove_red_eye</v-icon>
+          <td class="text-xs-center">
+            <v-chip v-if="!props.item.activo" color="red" text-color="white">Inactivo</v-chip>
+            <v-chip v-if="props.item.activo" color="green" text-color="white">Activo</v-chip>
+          </td>
+          <td class="layout px-0 text-xs-center">
+            <!-- <v-flex xs3>
+              <pagar-form :prestamo="props.item"></pagar-form>
+            </v-flex> -->
+            <v-flex xs3>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    v-on="on"
+                    flat
+                    icon
+                    color="success"
+                    @click="$emit('selectItem', props.item)"
+                  >
+                    <v-icon>remove_red_eye</v-icon>
+                  </v-btn>
+                </template>
+                <span>Ver detalles</span>
+              </v-tooltip>
+            </v-flex>
           </td>
         </template>
         <template
@@ -123,10 +128,11 @@
 </template>
 
 <script>
+import PagarForm from "./PagarForm";
 import config from "../config";
 import LoadingDialog from "./LoadingDialog";
 export default {
-  components: { LoadingDialog },
+  components: { LoadingDialog, PagarForm },
   data() {
     return {
       db: config.db,
@@ -202,6 +208,12 @@ export default {
           value: "comisionista"
         },
         {
+          text: "Estado",
+          align: "center",
+          sortable: true,
+          value: "activo"
+        },
+        {
           text: "Opciones",
           align: "center"
         }
@@ -236,24 +248,24 @@ export default {
       this.items = [];
       for (let key in items) {
         // console.log(items[key]);
-        if (items[key].activo == true) {
-          this.items.push({
-            key: key,
-            activo: items[key].activo,
-            inicio: items[key].inicio,
-            solicitud: items[key].solicitud,
-            cliente: items[key].cliente,
-            tipo: items[key].tipo,
-            capital: items[key].capital,
-            tasa: items[key].tasa,
-            intereses: items[key].intereses,
-            montototal: items[key].capital + items[key].intereses,
-            plazo: items[key].plazo,
-            comisionista: items[key].comisionista,
-            pago: items[key].pago,
-            tabla: items[key].tabla
-          });
-        }
+        // if (items[key].activo == true) {
+        this.items.push({
+          key: key,
+          activo: items[key].activo,
+          inicio: items[key].inicio,
+          solicitud: items[key].solicitud,
+          cliente: items[key].cliente,
+          tipo: items[key].tipo,
+          capital: items[key].capital,
+          tasa: items[key].tasa,
+          intereses: items[key].intereses,
+          montototal: items[key].capital + items[key].intereses,
+          plazo: items[key].plazo,
+          comisionista: items[key].comisionista,
+          pago: items[key].pago,
+          tabla: items[key].tabla
+        });
+        // }
       }
       // console.log(this.items)
       this.filteredItems = this.items;

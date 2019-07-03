@@ -1,11 +1,23 @@
 <template>
-  <v-app>    
+  <v-app>
     <v-toolbar app :color="color">
-      <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon dark @click="drawer = !drawer"></v-toolbar-side-icon>
       <router-link to="/">
         <v-toolbar-title class="headline text-uppercase">
-          <span>SINAI </span>
-          <span class="font-weight-light">V1.0</span>
+          <!-- <span>SINAI</span>
+          <span class="font-weight-light">V1.0</span> -->
+          <v-img
+            :src="`https://drive.google.com/file/d/1PSJeehL0dfI-KgOGlGNklYcz8z0zhPdM/view?usp=sharing`"
+            :lazy-src="`https://drive.google.com/file/d/1PSJeehL0dfI-KgOGlGNklYcz8z0zhPdM/view?usp=sharing`"
+            aspect-ratio="1"
+            class="grey lighten-2"
+          >
+            <template v-slot:placeholder>
+              <v-layout fill-height align-center justify-center ma-0>
+                <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+              </v-layout>
+            </template>
+          </v-img>
         </v-toolbar-title>
       </router-link>
     </v-toolbar>
@@ -25,7 +37,7 @@
               <v-btn icon @click.stop="mini = !mini">
                 <v-icon>chevron_left</v-icon>
               </v-btn>
-            </v-list-tile-action> -->
+            </v-list-tile-action>-->
           </v-list-tile>
         </v-list>
       </v-toolbar>
@@ -56,7 +68,7 @@ export default {
   components: {},
   data() {
     return {
-      color: "light-green lighten-5",
+      color: "#4472C4",
       // color: "brown lighten-5",
       drawer: false,
       items: [

@@ -10,6 +10,10 @@
     <v-form>
       <v-container>
         <v-layout row wrap>
+          <v-flex xs12>
+            <v-alert :value="true" type="info"  dismissible>Seleccione los parámetros del préstamo y posteriormente presione el botón "Calcular" para generar la tabla de amortización.<br>
+            Una vez verificados los datos presione el botón <v-icon color="white">save</v-icon> para generar el préstamo.</v-alert>
+          </v-flex>
           <v-flex xs3>
             <v-select
               v-model="prestamo.capital"
