@@ -84,30 +84,19 @@ export default {
   data: () => ({
     dialog: false,
     db: config.db,
-    defaultPago: {
-      fecha: "",
-      saldoFinal: "",
-      saldoInicial: "",
-      pagoCapital: 0,
-      pagoInteres: 0,
-      pagoTotal: 0,
-      multa: 0
-    },
     pago: {
-      fecha: "",
-      saldoFinal: "",
-      saldoInicial: "",
-      pagoCapital: 0,
-      pagoInteres: 0,
-      pagoTotal: 0,
-      multa: 0
-    }
+      idPago: "",
+      idCliente: "",
+      monto: 0.0,
+      concepto: "",
+      fecha: ""
+    },      
   }),
   methods: {
     saveData() {
-      if(!this.$v.$dirty){
+      if (!this.$v.$dirty) {
         this.pago.fecha = new Date();
-        this.pago.saldoInicial = this.prestamo.tabla
+        this.pago.saldoInicial = this.prestamo.tabla;
         this.prestamo.abonos.push(this.pago);
       }
     }

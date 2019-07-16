@@ -17,113 +17,115 @@
         <clientes-table v-on:editClient="editItem($event)" :options="1"></clientes-table>
       </v-flex>
     </v-layout>
-    <v-dialog
-      v-model="showForm"
-      fullscreen
-      hide-overlay
-      scrollable
-      transition="dialog-bottom-transition"
-    >
-      <v-card>
-        <!-- <v-card-title> -->
-        <v-toolbar color="#4472C4" dark>
-          <v-btn icon dark @click="cancel">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark flat @click="saveData">
-              <v-icon>save</v-icon>
+    <v-layout row justify-center>
+      <v-dialog
+        v-model="showForm"
+        fullscreen
+        hide-overlay
+        scrollable
+        transition="dialog-bottom-transition"
+      >
+        <v-card>
+          <!-- <v-card-title> -->
+          <v-toolbar color="#4472C4" dark>
+            <v-btn icon dark @click="cancel">
+              <v-icon>close</v-icon>
             </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-        <!-- </v-card-title> -->
-        <v-card-text>
-          <v-flex xs10 d-flex offset-xs1>
-            <div>
-              <v-alert
-                v-model="alertShow"
-                dismissible
-                transition="scale-transition"
-                :color="alertStyle"
-                icon="warning"
-              >{{alertMessage}}</v-alert>
-            </div>
-          </v-flex>
-          <v-divider class="divisor"></v-divider>
+            <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn dark flat @click="saveData">
+                <v-icon>save</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <!-- </v-card-title> -->
+          <v-card-text>
+            <v-flex xs10 d-flex offset-xs1>
+              <div>
+                <v-alert
+                  v-model="alertShow"
+                  dismissible
+                  transition="scale-transition"
+                  :color="alertStyle"
+                  icon="warning"
+                >{{alertMessage}}</v-alert>
+              </div>
+            </v-flex>
+            <v-divider class="divisor"></v-divider>
 
-          <v-flex xs10 d-flex offset-xs1>
-            <v-card>
-              <v-toolbar color="#4472C4" dark>
-                <v-toolbar-title>Datos del solicitante</v-toolbar-title>
-              </v-toolbar>
-              <!-- <cliente-form
+            <v-flex xs10 d-flex offset-xs1>
+              <v-card>
+                <v-toolbar color="#4472C4" dark>
+                  <v-toolbar-title>Datos del solicitante</v-toolbar-title>
+                </v-toolbar>
+                <!-- <cliente-form
               v-if="selectedItem.key !== ''"
               v-if="selectedItem.key === ''"
               :initial-client="selectedItem"
               :comisionistas="comisionistas"
               :es-referencia="false"
               v-on:esCasado="isMarried($event)"
-              ></cliente-form>-->
-              <cliente-form
-                ref="form1"
-                :initial-client="solicitante"
-                :comisionistas="comisionistas"
-                :es-referencia="false"
-                v-on:esCasado="isMarried($event)"
-              ></cliente-form>
-            </v-card>
-          </v-flex>
-          <v-divider class="divisor"></v-divider>
+                ></cliente-form>-->
+                <cliente-form
+                  ref="form1"
+                  :initial-client="solicitante"
+                  :comisionistas="comisionistas"
+                  :es-referencia="false"
+                  v-on:esCasado="isMarried($event)"
+                ></cliente-form>
+              </v-card>
+            </v-flex>
+            <v-divider class="divisor"></v-divider>
 
-          <v-flex v-if="married" xs10 d-flex offset-xs1>
-            <v-card>
-              <v-toolbar color="#4472C4" dark>
-                <v-toolbar-title>Datos del conyuge</v-toolbar-title>
-              </v-toolbar>
-              <cliente-form
-                ref="form2"
-                :initial-client="conyuge"
-                :comisionistas="comisionistas"
-                :es-referencia="true"
-              ></cliente-form>
-            </v-card>
-          </v-flex>
-          <v-divider v-if="married" class="divisor"></v-divider>
+            <v-flex v-if="married" xs10 d-flex offset-xs1>
+              <v-card>
+                <v-toolbar color="#4472C4" dark>
+                  <v-toolbar-title>Datos del conyuge</v-toolbar-title>
+                </v-toolbar>
+                <cliente-form
+                  ref="form2"
+                  :initial-client="conyuge"
+                  :comisionistas="comisionistas"
+                  :es-referencia="true"
+                ></cliente-form>
+              </v-card>
+            </v-flex>
+            <v-divider v-if="married" class="divisor"></v-divider>
 
-          <v-flex xs10 d-flex offset-xs1>
-            <v-card>
-              <v-toolbar color="#4472C4" dark>
-                <v-toolbar-title>Datos de la referencia</v-toolbar-title>
-              </v-toolbar>
-              <cliente-form
-                ref="form3"
-                :initial-client="referencia"
-                :comisionistas="comisionistas"
-                :es-referencia="true"
-              ></cliente-form>
-            </v-card>
-          </v-flex>
-          <v-divider class="divisor"></v-divider>
+            <v-flex xs10 d-flex offset-xs1>
+              <v-card>
+                <v-toolbar color="#4472C4" dark>
+                  <v-toolbar-title>Datos de la referencia</v-toolbar-title>
+                </v-toolbar>
+                <cliente-form
+                  ref="form3"
+                  :initial-client="referencia"
+                  :comisionistas="comisionistas"
+                  :es-referencia="true"
+                ></cliente-form>
+              </v-card>
+            </v-flex>
+            <v-divider class="divisor"></v-divider>
 
-          <v-flex xs10 d-flex offset-xs1>
-            <v-card>
-              <v-toolbar color="#4472C4" dark>
-                <v-toolbar-title>Datos del aval</v-toolbar-title>
-              </v-toolbar>
-              <cliente-form
-                ref="form4"
-                :initial-client="aval"
-                :comisionistas="comisionistas"
-                :es-referencia="true"
-              ></cliente-form>
-            </v-card>
-          </v-flex>
-          <v-divider class="divisor"></v-divider>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+            <v-flex xs10 d-flex offset-xs1>
+              <v-card>
+                <v-toolbar color="#4472C4" dark>
+                  <v-toolbar-title>Datos del aval</v-toolbar-title>
+                </v-toolbar>
+                <cliente-form
+                  ref="form4"
+                  :initial-client="aval"
+                  :comisionistas="comisionistas"
+                  :es-referencia="true"
+                ></cliente-form>
+              </v-card>
+            </v-flex>
+            <v-divider class="divisor"></v-divider>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-layout>
     <loading-dialog :activator="loadingDialog"></loading-dialog>
     <!-- <pre>{{$data}}</pre> -->
   </v-container>

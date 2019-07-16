@@ -74,12 +74,10 @@
             <v-card elevation="0" class="mt-2 mb-1 py-2">
               <v-card-text class="subheading">
                 Debo (emos) y pagaré (mos) incondicionalmente por este pagaré a la orden de
-                <strong>ISAIAS ROJAS VEGA</strong>, a más tardar
+                <strong>__________________________________________________</strong>,
                 <strong>{{formatedDate}}</strong> la cantidad de
                 <strong>$ {{(prestamo.intereses + prestamo.capital).toFixed(2)}} ({{formatedNumber}} MEXICANOS MXN)</strong>.
-                <br />Valor recibido a mi (nuestra) entera satisfacción. Este pagaré forma parte de una serie numerada del 1 al XXX y todos están sujetos a la condición de que, al no
-                pagarse cualquiera de ellos a su vencimiento, serán exigibles todos los que le sigan en número, además de los ya vencidos, desde la fecha de vencimiento de este
-                documento hasta el día de su liquidación.
+                Valor recibido a mi (nuestra) entera satisfacción.
                 <br />Este pagaré generará un interés ordinario de 7% (siete por ciento) mensual por concepto de interés ordinario por todo el tiempo que permanezca insoluto el adeudo.
                 Igualmente obligándome a pagar para el caso de mora un interés moratorio equivalente al INTERÉS MORATORIO CON NÚMERO 9.5 % (nueve punto cinco por ciento)
                 mensual a partir de la fecha en que se constituya en mora y hasta su total liquidación.
@@ -125,7 +123,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-divider class="linea-firma mt-5"></v-divider>
-                <p class="text-xs-center">FIRMA DE CONFORMIDAD</p>
+                <p class="text-xs-center">FIRMA</p>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -164,7 +162,7 @@
                   ></v-text-field>
                 </v-flex>
                 <v-divider class="linea-firma mt-5"></v-divider>
-                <p class="text-xs-center">FIRMA DE CONFORMIDAD</p>
+                <p class="text-xs-center">FIRMA</p>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -231,7 +229,6 @@ export default {
     print(element) {
       let printContents, popupWin;
       printContents = document.getElementById(element).innerHTML;
-      // printContents = printContents += printContents;
       popupWin = window.open(
         "",
         "_blank",
@@ -253,22 +250,16 @@ export default {
       );
       let vuetifyCss = popupWin.document.createElement("link");
       vuetifyCss.setAttribute(
-        "href",        
+        "href",
         "https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css"
       );
-      vuetifyCss.setAttribute(
-        "rel",        
-        "stylesheet"
-      );
+      vuetifyCss.setAttribute("rel", "stylesheet");
       let vuetifyFont = popupWin.document.createElement("link");
       vuetifyFont.setAttribute(
-        "href",        
+        "href",
         "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons"
       );
-      vuetifyFont.setAttribute(
-        "rel",        
-        "stylesheet"
-      );
+      vuetifyFont.setAttribute("rel", "stylesheet");
       popupWin.document.write(`
       <html lang="es">
         <head>
@@ -303,11 +294,8 @@ export default {
               <v-content>
                 <v-container>
                   <v-layout row> 
-                  <v-flex xs12 class="recuadro">      
+                  <v-flex xs12 class="recuadro cuadro-redondeado" style="background-color: black">      
                   <v-card>           
-                    ${printContents}
-                    </v-card>
-                    <v-card>           
                     ${printContents}
                     </v-card>
                   </v-flex>

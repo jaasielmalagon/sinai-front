@@ -285,7 +285,7 @@ export default {
     this.db
       .ref("/prestamos")
       .orderByKey()
-      .on("value", snapshot => {
+      .once("value", snapshot => {
         this.loadItems(snapshot.val());
         this.loading = false;
       });

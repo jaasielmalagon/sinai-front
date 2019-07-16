@@ -9,167 +9,165 @@
         </div>
       </v-flex>
     </v-layout>
-    <v-layout row wrap style="background-color: red">
+    <v-layout row wrap>
       <v-flex xs12>
         <prestamos-table v-on:selectItem="selectItem($event)"></prestamos-table>
       </v-flex>
     </v-layout>
-    <v-dialog
-      v-model="formDialog"
-      fullscreen
-      hide-overlay
-      scrollable
-      transition="dialog-bottom-transition"
-    >
-      <v-card>
-        <v-toolbar dark color="#4472C4">
-          <v-btn icon dark @click="cancel(1)">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-layout row justify-center>
-              <v-dialog v-model="confirmationDialog" persistent max-width="290">
-                <template v-slot:activator="{ on }">
-                  <v-btn dark flat v-on="on" :disabled="prestamo.tabla ==''">
-                    <v-icon color="white">save</v-icon>
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title class="headline">¿Realmente desea guardar la información?</v-card-title>
-                  <v-card-text class="text-xs-justify">
-                    <p>Al presionar en "Si, continuar" el sistema asignará al cliente el préstamo con el balance de amortización generado.</p>
-                    <p>Antes de continuar asegúrese de haber comprobado que toda la información sea correcta.</p>
-                    <strong>Esta acción es irreversible y no podrá ser modificada posteriormente.</strong>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
+    <v-layout row justify-center>
+      <v-dialog
+        v-model="formDialog"
+        fullscreen
+        hide-overlay
+        scrollable
+        transition="dialog-bottom-transition"
+      >
+        <v-card>
+          <v-toolbar dark color="#4472C4">
+            <v-btn icon dark @click="cancel(1)">
+              <v-icon>close</v-icon>
+            </v-btn>
+            <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-layout row justify-center>
+                <v-dialog v-model="confirmationDialog" persistent max-width="290">
+                  <template v-slot:activator="{ on }">
                     <v-btn
-                      color="red darken-1"
+                      dark
                       flat
-                      @click="confirmationDialog = false"
-                    >No, cancelar</v-btn>
-                    <v-btn color="green darken-1" flat @click="saveData">Si, continuar</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+                      v-on="on"
+                      :disabled="prestamo.tabla =='' || prestamo.key != ''"
+                    >
+                      <v-icon color="white">save</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title class="headline">¿Realmente desea guardar la información?</v-card-title>
+                    <v-card-text class="text-xs-justify">
+                      <p>Al presionar en "Si, continuar" el sistema asignará al cliente el préstamo con el balance de amortización generado.</p>
+                      <p>Antes de continuar asegúrese de haber comprobado que toda la información sea correcta.</p>
+                      <strong>Esta acción es irreversible y no podrá ser modificada posteriormente.</strong>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="red darken-1"
+                        flat
+                        @click="confirmationDialog = false"
+                      >No, cancelar</v-btn>
+                      <v-btn color="green darken-1" flat @click="saveData">Si, continuar</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-layout>
+            </v-toolbar-items>
+          </v-toolbar>
+
+          <v-card-text>
+            <v-flex xs12 md4 d-flex offset-md4 style="margin-bottom: 5px" v-if="!showForm">
+              <div>
+                <v-alert
+                  v-model="alert.show"
+                  dismissible
+                  transition="scale-transition"
+                  :color="alert.style"
+                  icon="warning"
+                  class="text-xs-center"
+                >{{alert.message}}</v-alert>
+              </div>
+            </v-flex>
+
+            <v-flex xs12 md8 offset-md2 d-flex v-if="showForm && prestamo.cliente != ''">
+              <v-card color="grey lighten-5">
+                <v-toolbar color="#4472C4" dark>
+                  <v-toolbar-title>Parámetros del préstamo</v-toolbar-title>
+                </v-toolbar>
+                <v-card-text>
+                  <div>
+                    <v-alert
+                      v-model="alert.show"
+                      dismissible
+                      transition="scale-transition"
+                      :color="alert.style"
+                      icon="warning"
+                      class="text-xs-center"
+                    >{{alert.message}}</v-alert>
+                  </div>
+                  <v-container>
+                    <v-layout row wrap class="text-xs-center">
+                      <v-flex xs6 class="headline">
+                        <v-card>
+                          <v-card-title class="headline title font-weight-regular">Cliente:</v-card-title>
+                          <v-card-text
+                            class="mx-2 subheading"
+                          >{{prestamo.cliente.nombre}} {{prestamo.cliente.apaterno}} {{prestamo.cliente.amaterno}}</v-card-text>
+                        </v-card>
+                      </v-flex>
+                      <v-flex xs6 class="headline">
+                        <v-card>
+                          <v-card-title class="headline title font-weight-regular">Comisionista:</v-card-title>
+                          <v-card-text class="mx-2 body-2">{{prestamo.comisionista.nombre}}</v-card-text>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-container>
+                  <prestamo-form ref="prestamoForm" :prestamo="prestamo"></prestamo-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="success" @click="generarPrestamo">Calcular</v-btn>
+                  <v-btn color="error" @click="cancel(0)">Cancelar</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+
+            <v-divider class="divisor" v-if="showForm && prestamo.cliente != ''"></v-divider>
+
+            <v-flex
+              id="detalles-prestamo"
+              xs12
+              md10
+              offset-md1
+              xl8
+              offset-xl2
+              d-flex
+              v-if="prestamo.tabla != ''"
+            >
+              <amortizacion-table :prestamo="prestamo"></amortizacion-table>
+            </v-flex>
+
+            <v-divider class="divisor" v-if="prestamo.tabla != ''"></v-divider>
+
+            <v-flex
+              id="caratula-prestamo"
+              xs12
+              md10
+              offset-md1
+              xl8
+              offset-xl2
+              d-flex
+              v-if="prestamo.tabla != ''"
+            >
+              <caratula-credito :prestamo="prestamo"></caratula-credito>
+            </v-flex>
+
+            <v-divider class="divisor" v-if="prestamo.tabla != ''"></v-divider>
+
+            <v-flex xs12 md10 offset-md1 xl8 offset-xl2 d-flex v-if="prestamo.tabla != ''">
+              <pagare :prestamo="prestamo"></pagare>
+            </v-flex>
+            <v-divider class="divisor" v-if="showForm && prestamo.cliente == ''"></v-divider>
+            <v-layout row>
+              <v-flex xs12 d-flex v-if="prestamo.cliente == ''">
+                <clientes-table v-on:selectClient="setSolicitud($event)" :options="2"></clientes-table>
+              </v-flex>
             </v-layout>
-          </v-toolbar-items>
-        </v-toolbar>
-
-        <v-card-text>
-          <v-flex xs12 md4 d-flex offset-md4 style="margin-bottom: 5px" v-if="!showForm">
-            <div>
-              <v-alert
-                v-model="alert.show"
-                dismissible
-                transition="scale-transition"
-                :color="alert.style"
-                icon="warning"
-                class="text-xs-center"
-              >{{alert.message}}</v-alert>
-            </div>
-          </v-flex>
-          <!-- <pre>{{$data.solicitud}}</pre> -->
-          <!-- <v-divider class="divisor"></v-divider> -->
-
-          <v-flex xs12 md8 offset-md2 d-flex v-if="showForm && prestamo.cliente != ''">
-            <v-card color="grey lighten-5">
-              <v-toolbar color="#4472C4" dark>
-                <v-toolbar-title>Parámetros del préstamo</v-toolbar-title>
-              </v-toolbar>
-              <v-card-text>
-                <div>
-                  <v-alert
-                    v-model="alert.show"
-                    dismissible
-                    transition="scale-transition"
-                    :color="alert.style"
-                    icon="warning"
-                    class="text-xs-center"
-                  >{{alert.message}}</v-alert>
-                </div>
-                <v-container>
-                  <v-layout row wrap class="text-xs-center">
-                    <v-flex xs6 class="headline">
-                      <v-card>
-                        <v-card-title class="headline title font-weight-regular">Cliente:</v-card-title>
-                        <v-card-text
-                          class="mx-2 subheading"
-                        >{{prestamo.cliente.nombre}} {{prestamo.cliente.apaterno}} {{prestamo.cliente.amaterno}}</v-card-text>
-                      </v-card>
-                    </v-flex>
-                    <v-flex xs6 class="headline">
-                      <v-card>
-                        <v-card-title class="headline title font-weight-regular">Comisionista:</v-card-title>
-                        <v-card-text class="mx-2 body-2">{{prestamo.comisionista.nombre}}</v-card-text>
-                      </v-card>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-                <prestamo-form ref="prestamoForm" :prestamo="prestamo"></prestamo-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="success" @click="generarPrestamo">Calcular</v-btn>
-                <v-btn color="error" @click="cancel(0)">Cancelar</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-
-          <v-divider class="divisor" v-if="showForm && prestamo.cliente != ''"></v-divider>
-
-          <v-flex
-            id="detalles-prestamo"
-            xs12
-            md10
-            offset-md1
-            xl8
-            offset-xl2
-            d-flex
-            v-if="prestamo.tabla != ''"
-          >
-            <amortizacion-table :prestamo="prestamo"></amortizacion-table>
-          </v-flex>
-
-          <v-divider class="divisor" v-if="prestamo.tabla != ''"></v-divider>
-
-          <v-flex
-            id="caratula-prestamo"
-            xs12
-            md10
-            offset-md1
-            xl8
-            offset-xl2
-            d-flex
-            v-if="prestamo.tabla != ''"
-          >
-            <caratula-credito :prestamo="prestamo"></caratula-credito>
-          </v-flex>
-
-          <v-divider class="divisor" v-if="prestamo.tabla != ''"></v-divider>
-
-          <v-flex            
-            xs12
-            md10
-            offset-md1
-            xl8
-            offset-xl2
-            d-flex
-            v-if="prestamo.tabla != ''"
-          >
-            <pagare :prestamo="prestamo"></pagare>
-          </v-flex>
-          <v-divider class="divisor" v-if="showForm && prestamo.cliente == ''"></v-divider>
-          <v-flex xs12 d-flex v-if="prestamo.cliente == ''">
-            <clientes-table v-on:selectClient="setSolicitud($event)" :options="2"></clientes-table>
-          </v-flex>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-layout>
     <loading-dialog :activator="loadingDialog"></loading-dialog>
-    <!-- <pre>{{$data}}</pre> -->
   </v-container>
 </template>
 
@@ -227,6 +225,7 @@ export default {
         solicitante: ""
       },
       prestamo: {
+        key: "",
         activo: "",
         inicio: "",
         solicitud: "",
@@ -239,6 +238,7 @@ export default {
         comisionista: "",
         pago: "",
         abonos: [],
+        refinanciamiento: 0, //1: si, 0: no
         tabla: [] //{ fecha: "", capital: "", interes: "", pago: "", inicial: "", final: "" }
       },
       defaultPrestamo: {
@@ -350,20 +350,22 @@ export default {
       for (let i = 0; i < this.prestamo.plazo; i++) {
         let pagoN = {
           nPago: i + 1,
-          fecha: this.siguientePago(i + 1),
+          fecha: this.siguientePago(i + 1, 7),
+          vencimiento: this.siguientePago(i + 1, 6), //CAMBIAR
           pagoCapital: parseFloat(pagoCapital.toFixed(2)),
           pagoInteres: parseFloat(pagoInteres.toFixed(2)),
           totalPago: parseFloat(totalPago.toFixed(2)),
           final: parseFloat((prestamo - totalPago * (i + 1)).toFixed(2)),
-          inicial: parseFloat((prestamo - totalPago * i).toFixed(2))
+          inicial: parseFloat((prestamo - totalPago * i).toFixed(2)),
+          estado: "A"
         };
         this.prestamo.tabla.push(pagoN);
       }
       return this.prestamo.tabla.length == this.prestamo.plazo;
     },
-    siguientePago(semanas) {
+    siguientePago(semanas, dias) {
       let hoy = new Date();
-      let semanasEnMilisegundos = 1000 * 60 * 60 * 24 * 7 * semanas;
+      let semanasEnMilisegundos = 1000 * 60 * 60 * 24 * dias * semanas;
       let suma = hoy.getTime() + semanasEnMilisegundos; //getTime devuelve milisegundos de esa fecha
       let proximaFecha = new Date(suma);
       var dd = String(proximaFecha.getDate()).padStart(2, "0");
@@ -422,22 +424,10 @@ export default {
       }
     },
     selectItem(item) {
-      console.log(item);
-      return;
-      this.loadingDialog = true;
-      this.cancel(1);
-      this.formTitle = "Editar cliente";
-      this.db
-        .ref("/solicitudes")
-        .orderByChild("solicitante")
-        .equalTo(item.key)
-        .once("value", snapshot => {
-          this.cargarSolicitud(snapshot.val());
-          setTimeout(() => {
-            this.loadingDialog = false;
-            this.formDialog = true;
-          }, 1800);
-        });
+      this.formTitle = "Generar préstamo";
+      this.formDialog = true;
+      Object.assign(this.prestamo, item);
+      // console.log(this.prestamo);
     },
     add() {
       // this.cancel();

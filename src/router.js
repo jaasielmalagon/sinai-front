@@ -5,12 +5,18 @@ import NotFound from './views/NotFound'
 import Home from './views/Home'
 import Prestamos from './views/Prestamos'
 import Clientes from './views/Clientes'
+import CierreDiario from './views/CierreDiario'
 
 Vue.use(Router);
 
 export default new Router({
     mode: 'history',
-    routes: [
+    routes: [{
+            path: '/cierrediario',
+            name: 'cierre-diario',
+            component: CierreDiario,
+            // beforeEnter: guestUser
+        },
         {
             path: '/login',
             name: 'login',

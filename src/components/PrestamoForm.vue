@@ -40,18 +40,6 @@
           </v-flex>
           <v-flex xs3>
             <v-select
-              v-model="prestamo.plazo"
-              :items="plazos"
-              item-text="label"
-              item-value="value"
-              label="Plazo de crédito"
-              required
-              :disabled="estado"
-              :error-messages="formErrors"
-            ></v-select>
-          </v-flex>
-          <v-flex xs3>
-            <v-select
               v-model="prestamo.tipo"
               :items="tipos"
               item-text="label"
@@ -62,6 +50,18 @@
               :error-messages="formErrors"
             ></v-select>
           </v-flex>
+          <v-flex xs3>
+            <v-select
+              v-model="prestamo.plazo"
+              :items="plazos"
+              item-text="label"
+              item-value="value"
+              label="Plazo de crédito"
+              required
+              :disabled="estado"
+              :error-messages="formErrors"
+            ></v-select>
+          </v-flex>          
         </v-layout>
       </v-container>
     </v-form>
@@ -93,14 +93,6 @@ export default {
   },
   data() {
     return {
-      maxDate:
-        new Date().toISOString().substr(0, 4) -
-        18 +
-        "-" +
-        new Date().toISOString().substr(5, 2) +
-        "-" +
-        new Date().toISOString().substr(8, 2),
-      menu: false,
       capitales: [
         { id: 1, value: 3000, label: "$3000" },
         { id: 2, value: 4000, label: "$4000" },
@@ -132,9 +124,7 @@ export default {
       tipos: [
         { id: 1, value: "D", label: "Pago diario" },
         { id: 2, value: "S", label: "Pago semanal" }
-      ],
-      switch1: false
-      // comisionistas: [],
+      ]
     };
   },
   computed: {
