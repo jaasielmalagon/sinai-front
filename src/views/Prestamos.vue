@@ -350,8 +350,8 @@ export default {
       for (let i = 0; i < this.prestamo.plazo; i++) {
         let pagoN = {
           nPago: i + 1,
-          fecha: this.siguientePago(i + 1, 7),
-          vencimiento: this.siguientePago(i + 1, 6), //CAMBIAR
+          fecha: this.siguientePago(i + 1),
+          vencimiento: this.fechaVencimiento(i + 1), //CAMBIAR
           pagoCapital: parseFloat(pagoCapital.toFixed(2)),
           pagoInteres: parseFloat(pagoInteres.toFixed(2)),
           totalPago: parseFloat(totalPago.toFixed(2)),
@@ -363,10 +363,21 @@ export default {
       }
       return this.prestamo.tabla.length == this.prestamo.plazo;
     },
-    siguientePago(semanas, dias) {
+    siguientePago(semanas) {
       let hoy = new Date();
-      let semanasEnMilisegundos = 1000 * 60 * 60 * 24 * dias * semanas;
+      let semanasEnMilisegundos = 1000 * 60 * 60 * 24 * 7 * semanas;
       let suma = hoy.getTime() + semanasEnMilisegundos; //getTime devuelve milisegundos de esa fecha
+      let proximaFecha = new Date(suma);
+      var dd = String(proximaFecha.getDate()).padStart(2, "0");
+      var mm = String(proximaFecha.getMonth() + 1).padStart(2, "0"); //January is 0!
+      var yyyy = proximaFecha.getFullYear();
+      return dd + "-" + mm + "-" + yyyy;
+    },
+    fechaVencimiento(semanas) {
+      let hoy = new Date();
+      let semanasEnMilisegundos = 1000 * 60 * 60 * 24 * 7 * semanas;
+      let diaEnMilisegundos = 1000 * 60 * 60 * 24;
+      let suma = hoy.getTime() - diaEnMilisegundos + semanasEnMilisegundos; //getTime devuelve milisegundos de esa fecha
       let proximaFecha = new Date(suma);
       var dd = String(proximaFecha.getDate()).padStart(2, "0");
       var mm = String(proximaFecha.getMonth() + 1).padStart(2, "0"); //January is 0!
